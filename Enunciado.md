@@ -1,6 +1,6 @@
 # TP: Carrera de obstáculos Pokemon
 
-Se pide implementar un minijuego de carrara de obstáculos Pokemon. El juego debe poder correrse por consola y ser interactivo (el usuario interactúa con el programa mediante entradas de teclado y salidas por pantalla).
+Se pide implementar un minijuego de carrera de obstáculos Pokemon. El juego debe poder correrse por consola y ser interactivo (el usuario interactúa con el programa mediante entradas de teclado y salidas por pantalla).
 
 La **presentación es parte de la nota**. Se juzga no solo la apariencia (que es importante), si no también la facilidad para interactuar con el juego, la disponibilidad de información que tenga el jugador para poder interactuar, etc.
 
