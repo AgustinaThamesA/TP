@@ -20,10 +20,10 @@
 #define DIFICULATD_IMPOSIBLE 4
 
 #define MAX_LARGO_PISTA 50
-#define PISTA_VACIA "| |"
-#define PISTA_FUERZA "|F|"
-#define PISTA_DESTREZA "|D|"
-#define PISTA_INTELIGENCIA "|I|"
+#define PISTA_VACIA "_"
+#define PISTA_FUERZA "F"
+#define PISTA_DESTREZA "D"
+#define PISTA_INTELIGENCIA "I"
 
 typedef struct jugadores jugadores_t;
 typedef struct pista_jugador pista_jugador_t;
@@ -33,8 +33,8 @@ typedef struct pista_jugador pista_jugador_t;
 
 void leer_archivo(TP *tp, const char *nombre_archivo);
 bool guardar_nombres_como_string(void *dato, void *aux);
-void creacion_pista(char* pista_jugador[MAX_LARGO_PISTA]);
-int aleatoria (int maximo, int minimo);
-void imprimir_pista(TP *tp, enum TP_JUGADOR jugador);
+void creacion_pista(pista_jugador_t *pista_jugador);
+unsigned aleatoria (int maximo, int minimo);
+void imprimir_pista(TP *tp);
 
 #endif // __TP_ESTRUCTURA_PRIVADA_H__

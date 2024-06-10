@@ -16,17 +16,6 @@ struct tp {
     jugadores_t jugadores;
 }; 
 
-/* MIO QUE NO FUNCA
-struct tp {
-    abb_t* pokemones;
-    int cantidad_pokemones;
-    int dificultad;
-    abb_t *puntajes;
-    int cantidad_intentos;
-    jugadores_t jugadores[2]; 
-};
-*/
-
 int comparar_pokemon(void *poke1, void *poke2) {
     struct pokemon_info *pokemon1 = (struct pokemon_info *)poke1;
     struct pokemon_info *pokemon2 = (struct pokemon_info *)poke2;
@@ -89,8 +78,18 @@ void leer_archivo(TP *tp, const char *nombre_archivo){
 
 TP *tp_crear(const char *nombre_archivo)
 {
-	TP *tp = calloc(1,sizeof(TP));
+    TP *tp = calloc(1,sizeof(TP));
     if (!tp) return NULL;
+
+    for (int i = 0; i < 2; i++) {
+        tp->jugadores.pista_jugador[i] = malloc(sizeof(pista_jugador_t));
+        if (!tp->jugadores.pista_jugador[i]) {
+            free(tp);
+            return NULL;
+        }
+        tp->jugadores.pista_jugador[i]->largo_actual = 0; // Initialize largo_actual to 0
+        creacion_pista(tp->jugadores.pista_jugador[i]);
+    }
 
     leer_archivo(tp, nombre_archivo);
     
@@ -102,10 +101,16 @@ int tp_cantidad_pokemon(TP *tp){
     return (int)abb_tamanio(tp->pokemones); 
 }
 
-const struct pokemon_info *tp_buscar_pokemon(TP *tp, const char *nombre)
-{
-	if (tp == NULL) return NULL;
-    return abb_buscar(tp->pokemones, (char*)nombre);
+const struct pokemon_info *tp_buscar_pokemon(TP *tp, const char *nombre) {
+    if (tp == NULL) return NULL;
+
+    struct pokemon_info buscar;
+    buscar.nombre = strdup2(nombre);
+
+    struct pokemon_info *poke_buscado = abb_buscar(tp->pokemones, &buscar);
+    free(buscar.nombre);
+
+    return poke_buscado;
 }
 
 bool concatenar_nombres(void *elemento, void *aux) {
@@ -135,7 +140,6 @@ bool concatenar_nombres(void *elemento, void *aux) {
     return true;
 }
 
-
 char *tp_nombres_disponibles(TP *tp) {
     if (tp == NULL) return NULL;
     
@@ -150,20 +154,43 @@ char *tp_nombres_disponibles(TP *tp) {
 } 
 
 bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre) {
+    if (tp == NULL || nombre == NULL) {
+        return false;
+    }
+
+    const struct pokemon_info *poke = tp_buscar_pokemon(tp, nombre);
+    if (poke == NULL) {
+        return false;
+    }
+
+    if (jugador == JUGADOR_1 && tp->jugadores.pokemon_seleccionado[JUGADOR_2] != NULL && strcmp(tp->jugadores.pokemon_seleccionado[JUGADOR_2]->nombre, poke->nombre) == 0) {
+        return false;
+    }
+
+    if (jugador == JUGADOR_2 && tp->jugadores.pokemon_seleccionado[JUGADOR_1] != NULL && strcmp(tp->jugadores.pokemon_seleccionado[JUGADOR_1]->nombre, poke->nombre) == 0) {
+        return false;
+    }
+
     if (tp->jugadores.pokemon_seleccionado[jugador] != NULL) {
+        free(tp->jugadores.pokemon_seleccionado[jugador]->nombre);
         free(tp->jugadores.pokemon_seleccionado[jugador]);
     }
-/*
-    if (jugador == JUGADOR_1 && strcmp(tp->jugadores.pokemon_seleccionado[JUGADOR_2]->nombre, nombre) == 0) {
-        return false;
-    } else if (jugador == JUGADOR_2 && strcmp(tp->jugadores.pokemon_seleccionado[JUGADOR_1]->nombre, nombre) == 0) {
+
+    tp->jugadores.pokemon_seleccionado[jugador] = malloc(sizeof(struct pokemon_info));
+    if (tp->jugadores.pokemon_seleccionado[jugador] == NULL) {
         return false;
     }
 
-*/
+    tp->jugadores.pokemon_seleccionado[jugador]->nombre = strdup2(poke->nombre);
+    if (tp->jugadores.pokemon_seleccionado[jugador]->nombre == NULL) {
+        free(tp->jugadores.pokemon_seleccionado[jugador]);
+        tp->jugadores.pokemon_seleccionado[jugador] = NULL; // Asegurarse de asignar NULL
+        return false;
+    }
 
-    printf("%s\n", nombre);
-    tp->jugadores.pokemon_seleccionado[jugador]->nombre = (char*)nombre;
+    tp->jugadores.pokemon_seleccionado[jugador]->fuerza = poke->fuerza;
+    tp->jugadores.pokemon_seleccionado[jugador]->destreza = poke->destreza;
+    tp->jugadores.pokemon_seleccionado[jugador]->inteligencia = poke->inteligencia;
 
     return true;
 }
@@ -171,36 +198,84 @@ bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre)
 const struct pokemon_info *tp_pokemon_seleccionado(TP *tp, enum TP_JUGADOR jugador) {
     if (tp->jugadores.pokemon_seleccionado[jugador] == NULL)  return NULL;
     
-    struct pokemon_info *pokemon_info = abb_buscar(tp->pokemones, tp->jugadores.pokemon_seleccionado[jugador]->nombre);
-    if (pokemon_info == NULL) return NULL; 
+    const struct pokemon_info *poke = tp_buscar_pokemon(tp, tp->jugadores.pokemon_seleccionado[jugador]->nombre);
+    if (poke == NULL) {
+        return NULL;
+    }
     
-    return pokemon_info;
+    return poke;
 }
 
-void creacion_pista(char* pista_jugador[MAX_LARGO_PISTA]){
+void creacion_pista(pista_jugador_t *pista_jugador){
     for (int i = 0; i < MAX_LARGO_PISTA; i++){
-        pista_jugador[i] = PISTA_VACIA;
+        pista_jugador->pista[i] = PISTA_VACIA;
 	}
+    pista_jugador->largo_actual = 0;
 }
 
-int aleatoria (int maximo, int minimo){
+unsigned aleatoria (int maximo, int minimo) {
 	srand (( unsigned)time(NULL));
 
 	int numero = rand () % maximo + minimo;
 
-	return numero;
+	return (unsigned)numero;
 }
 
 unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO obstaculo, unsigned posicion) {
-    return 0;
+    if (tp == NULL || jugador != JUGADOR_1 || jugador != JUGADOR_2 || obstaculo != OBSTACULO_DESTREZA || obstaculo != OBSTACULO_FUERZA || obstaculo != OBSTACULO_INTELIGENCIA) {
+        return 0;
+    }
+
+    pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
+
+    if (posicion >= MAX_LARGO_PISTA) {
+        posicion = MAX_LARGO_PISTA - 1;
+    }
+
+    for (unsigned i = pista_jugador->largo_actual; i > posicion; i--) {
+        pista_jugador->pista[i] = pista_jugador->pista[i - 1];
+    }
+
+    char *obstaculo_str = NULL;
+    switch (obstaculo) {
+        case OBSTACULO_FUERZA:
+            obstaculo_str = strdup2(PISTA_FUERZA);
+            break;
+        case OBSTACULO_DESTREZA:
+            obstaculo_str = strdup2(PISTA_DESTREZA);
+            break;
+        case OBSTACULO_INTELIGENCIA:
+            obstaculo_str = strdup2(PISTA_INTELIGENCIA);
+            break;
+        default:
+            return 0; 
+    }
+
+    if (obstaculo_str == NULL) {
+        return 0;
+    }
+
+    pista_jugador->pista[posicion] = obstaculo_str;
+    pista_jugador->largo_actual++;
+
+    return pista_jugador->largo_actual;
 }
 
-void imprimir_pista(TP *tp, enum TP_JUGADOR jugador){
-    if (tp == NULL || jugador != JUGADOR_1 || jugador != JUGADOR_2) return;
-    printf("\n");
-	for (int i = 0; i < MAX_LARGO_PISTA; i++){
-		printf("%s", tp->jugadores.pista_jugador[jugador]->pista[i]);
-	}
+void imprimir_pista(TP *tp){
+    if (tp == NULL) return;
+
+    printf("\nPista Jugador 1:\n");
+    if (tp->jugadores.pista_jugador[JUGADOR_1]) {
+        for (int i = 0; i < MAX_LARGO_PISTA; i++){
+            printf("%s", tp->jugadores.pista_jugador[JUGADOR_1]->pista[i]);
+        }
+    }
+    printf("\nPista Jugador 2:\n");
+    if (tp->jugadores.pista_jugador[JUGADOR_2]) {
+        for (int i = 0; i < MAX_LARGO_PISTA; i++){
+            printf("%s", tp->jugadores.pista_jugador[JUGADOR_2]->pista[i]);
+        }
+    }
     printf("\n");
 }
 
@@ -223,7 +298,6 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 	}
     printf("Pista en preparación para la siguiente carrera..");
 }
-
 
 unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 {
@@ -248,8 +322,16 @@ void tp_destruir(TP *tp) {
     abb_destruir(tp->pokemones);
 
     for (int i = 0; i < 2; i++) {
-        free(tp->jugadores.pokemon_seleccionado[i]);
-        free(tp->jugadores.pista_jugador[i]);
+        if (tp->jugadores.pokemon_seleccionado[i] != NULL) {
+            free(tp->jugadores.pokemon_seleccionado[i]->nombre);
+            free(tp->jugadores.pokemon_seleccionado[i]);
+        }
+        if (tp->jugadores.pista_jugador[i] != NULL) {
+            for (unsigned j = 0; j < tp->jugadores.pista_jugador[i]->largo_actual; j++) {
+                free(tp->jugadores.pista_jugador[i]->pista[j]);
+            }
+            free(tp->jugadores.pista_jugador[i]);
+        }
     }
 
     free(tp);

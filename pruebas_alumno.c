@@ -24,28 +24,25 @@ void busco_nombres_de_pokemones(){
 	tp_destruir(tp);
 }
 
-
-
 void pruebas_tp_seleccionar_pokemon(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	const char* nombre = "Pikachu";
 
 	const struct pokemon_info *poke = tp_buscar_pokemon(tp, nombre);
-	printf("%p", (void*)poke);
-/*
+	pa2m_afirmar(strcmp(nombre, poke->nombre) == 0, "Pikachu existe en el archivo");
+
 	bool seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu");
 	pa2m_afirmar(seleccionado == true, "Selecciono a Pikachu como pokemon del Jugador 1.");
 
 	seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_2, "Pikachu");
 	pa2m_afirmar(seleccionado == false, "El Jugador 2 no puede elegir a Pikachu como su pokemon, porque ese pokemon le pertenece al Jugador 1.");
 
-	seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_2, "Charmander");
-	pa2m_afirmar(seleccionado == true, "Selecciono a Charmander como pokemon del Jugador 2.");
+	seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_2, "Bulbasaur");
+	pa2m_afirmar(seleccionado == true, "Selecciono a Bulbasaur como pokemon del Jugador 2.");
 
-	seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_1, "Charmander");
-	pa2m_afirmar(seleccionado == false, "El Jugador 1 no puede elegir a Charmander como su pokemon, porque ese pokemon le pertenece al Jugador 2.");
-
-*/
+	seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_1, "Bulbasaur");
+	pa2m_afirmar(seleccionado == false, "El Jugador 1 no puede elegir a Bulbasaur como su pokemon, porque ese pokemon le pertenece al Jugador 2.");
+	
 
 	tp_destruir(tp);
 }
@@ -65,34 +62,42 @@ void pruebas_tp_pokemon_seleccionado() {
 
 	tp_destruir(tp);
 }
-/*
-void pruebas_imprimir_pista_vacia(){
+
+void pruebas_imprimir_pistas_vacias(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
-	unsigned total_obstaculos = tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0);
-	pa2m_afirmar(total_obstaculos == 1, "Se agregó correctamente un obstáculo de fuerza a la pista del Jugador 1.");
-	//imprimir_pista(tp, JUGADOR_1);
+	imprimir_pista(tp);
 
-	total_obstaculos = tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 1);
-	pa2m_afirmar(total_obstaculos == 2, "Se agregó correctamente un obstáculo de destreza a la pista del Jugador 1.");
-	//imprimir_pista(tp, JUGADOR_1);
-
-	total_obstaculos = tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA, 2);
-	pa2m_afirmar(total_obstaculos == 3, "Se agregó correctamente un obstáculo de fuerza a la pista del Jugador 1.");
-	//imprimir_pista(tp, JUGADOR_1);
-
-	total_obstaculos = tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 30);
-	pa2m_afirmar(total_obstaculos == 0, "No se puede agregar un obstáculo fuera de los límites de la pista.");
-	//imprimir_pista(tp, JUGADOR_1);
-
-	total_obstaculos = tp_agregar_obstaculo(tp, -1, OBSTACULO_DESTREZA, 4);
-	pa2m_afirmar(total_obstaculos == 0, "No se puede agregar un obstáculo a la pista de un jugador inválido.");
-	//imprimir_pista(tp, JUGADOR_1);
-	
 	tp_destruir(tp);
 }
 
-*/
+void pruebas_imprimir_pistas_con_obstaculos(){
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+    
+	for (int j = 0; j < 3; j++) {
+		enum TP_OBSTACULO obstaculo;
+		switch (j) {
+		case 0:
+			obstaculo = OBSTACULO_FUERZA;
+			break;
+		case 1:
+			obstaculo = OBSTACULO_DESTREZA;
+			break;
+		case 2:
+			obstaculo = OBSTACULO_INTELIGENCIA;
+			break;
+		}
+		unsigned posicion = aleatoria(MAX_LARGO_PISTA, 0);
+		tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo, posicion);
+		tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo, posicion);
+	}
+
+
+	imprimir_pista(tp);
+
+	tp_destruir(tp);
+}
 
 int main()
 {
@@ -107,11 +112,16 @@ int main()
 	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de selección ========================");
 	pruebas_tp_seleccionar_pokemon();
-	//pruebas_tp_pokemon_seleccionado();
+	printf("\n");
+	pruebas_tp_pokemon_seleccionado();
 
 	pa2m_nuevo_grupo(
-		"\n======================== Pruebas de pista ========================");
-	//pruebas_imprimir_pista_vacia();
+		"\n======================== Pruebas de pista vacía ========================");
+	pruebas_imprimir_pistas_vacias();
+
+	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de pista con obstáculos ========================");
+	pruebas_imprimir_pistas_con_obstaculos();
 
 	return pa2m_mostrar_reporte();
 }
