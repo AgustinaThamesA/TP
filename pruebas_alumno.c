@@ -167,6 +167,43 @@ void pruebas_quitar_obstaculo_de_pista(){
 	tp_destruir(tp);
 }
 
+void pruebas_string_con_obstaculos_de_cada_pista(){
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
+	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
+
+	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
+	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
+
+	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
+	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	char *obstaculos = tp_obstaculos_pista(tp, JUGADOR_1);
+
+	printf("\nObstáculos en la pista del Jugador 1: %s\n", obstaculos);
+
+	free(obstaculos);
+
+	char *obstaculos2 = tp_obstaculos_pista(tp, JUGADOR_2);
+
+	printf("\nObstáculos en la pista del Jugador 2: %s\n", obstaculos2);
+
+	free(obstaculos2);
+
+	tp_destruir(tp);
+}
+
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -198,6 +235,11 @@ int main()
 	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de quitar obstáculos ========================");
 	pruebas_quitar_obstaculo_de_pista();
+
+	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de string de obstáculos ========================");
+	pruebas_string_con_obstaculos_de_cada_pista();
+
 
 	return pa2m_mostrar_reporte();
 }

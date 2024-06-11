@@ -37,4 +37,6 @@ void creacion_pista(pista_jugador_t *pista_jugador);
 unsigned aleatoria (int maximo, int minimo);
 void imprimir_pista(TP *tp);
 
+unsigned cant_obstaculos_actual_jugador(TP *tp, enum TP_JUGADOR jugador);
+
 #endif // __TP_ESTRUCTURA_PRIVADA_H__

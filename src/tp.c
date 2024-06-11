@@ -320,16 +320,15 @@ char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador) {
     }
 
     pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
-    char *obstaculos = malloc((pista_jugador->cant_obstaculos + 1) * sizeof(char));
+    char *obstaculos = calloc(1, (pista_jugador->cant_obstaculos + 1) * sizeof(char));
     if (obstaculos == NULL) return NULL;
 
     int i = 0;
-    for (i = 0; i < pista_jugador->cant_obstaculos; i++) {
+    for (i = 0; i < MAX_LARGO_PISTA; i++) {
         if (strcmp(pista_jugador->pista[i], "F") == 0 || strcmp(pista_jugador->pista[i], "D") == 0 || strcmp(pista_jugador->pista[i], "I") == 0 ){
-            obstaculos[i] = pista_jugador->pista[i][0];
+            strcat(obstaculos, pista_jugador->pista[i]);
         }
     }
-    obstaculos[i] = '\0';
 
     return obstaculos;
 }
