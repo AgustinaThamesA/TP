@@ -74,25 +74,93 @@ void pruebas_imprimir_pistas_vacias(){
 void pruebas_imprimir_pistas_con_obstaculos(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
-    
-	for (int j = 0; j < 3; j++) {
-		enum TP_OBSTACULO obstaculo;
-		switch (j) {
-		case 0:
-			obstaculo = OBSTACULO_FUERZA;
-			break;
-		case 1:
-			obstaculo = OBSTACULO_DESTREZA;
-			break;
-		case 2:
-			obstaculo = OBSTACULO_INTELIGENCIA;
-			break;
-		}
-		unsigned posicion = aleatoria(MAX_LARGO_PISTA, 0);
-		tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo, posicion);
-		tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo, posicion);
-	}
+	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
+	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
 
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1) == 1, "Hay 1 obstáculo en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1) == 1, "Hay 1 obstáculo en la pista del Jugador 2.");
+
+	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
+	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 2.");
+
+	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
+	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	tp_destruir(tp);
+}
+
+void pruebas_limpiar_pista_con_obstaculos(){
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
+	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
+
+	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
+	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
+
+	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
+	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	printf("\nLimpiando pista de Jugador 1...");
+
+	tp_limpiar_pista(tp, JUGADOR_1);
+
+	pa2m_afirmar(cant_obstaculos_actual_jugador(tp, JUGADOR_1) == 0, "No hay obstáculos en la pista del Jugador 1.");
+
+	imprimir_pista(tp);
+
+	printf("\nLimpiando pista de Jugador 2...");
+
+	tp_limpiar_pista(tp, JUGADOR_2);
+
+	pa2m_afirmar(cant_obstaculos_actual_jugador(tp, JUGADOR_2) == 0, "No hay obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	tp_destruir(tp);
+}
+
+void pruebas_quitar_obstaculo_de_pista(){
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
+	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
+
+	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
+	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_1, posicion1) == 1, "Quitar deja 1 obstáculo en la pista del Jugador 1.");
+
+	imprimir_pista(tp);
+
+	pa2m_afirmar(tp_quitar_obstaculo(tp, JUGADOR_2, posicion2) == 1, "Quitar deja 1 obstáculo en la pista del Jugador 2.");
 
 	imprimir_pista(tp);
 
@@ -122,6 +190,14 @@ int main()
 	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de pista con obstáculos ========================");
 	pruebas_imprimir_pistas_con_obstaculos();
+
+	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de limpieza de pista ========================");
+	pruebas_limpiar_pista_con_obstaculos();
+
+	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de quitar obstáculos ========================");
+	pruebas_quitar_obstaculo_de_pista();
 
 	return pa2m_mostrar_reporte();
 }

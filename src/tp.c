@@ -3,7 +3,7 @@
 
 struct pista_jugador{
     char* pista[MAX_LARGO_PISTA];
-    unsigned largo_actual;
+    unsigned cant_obstaculos;
 };
 
 struct jugadores {
@@ -87,7 +87,7 @@ TP *tp_crear(const char *nombre_archivo)
             free(tp);
             return NULL;
         }
-        tp->jugadores.pista_jugador[i]->largo_actual = 0; // Initialize largo_actual to 0
+        tp->jugadores.pista_jugador[i]->cant_obstaculos = 0; 
         creacion_pista(tp->jugadores.pista_jugador[i]);
     }
 
@@ -184,7 +184,7 @@ bool tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre)
     tp->jugadores.pokemon_seleccionado[jugador]->nombre = strdup2(poke->nombre);
     if (tp->jugadores.pokemon_seleccionado[jugador]->nombre == NULL) {
         free(tp->jugadores.pokemon_seleccionado[jugador]);
-        tp->jugadores.pokemon_seleccionado[jugador] = NULL; // Asegurarse de asignar NULL
+        tp->jugadores.pokemon_seleccionado[jugador] = NULL; 
         return false;
     }
 
@@ -210,55 +210,65 @@ void creacion_pista(pista_jugador_t *pista_jugador){
     for (int i = 0; i < MAX_LARGO_PISTA; i++){
         pista_jugador->pista[i] = PISTA_VACIA;
 	}
-    pista_jugador->largo_actual = 0;
+    pista_jugador->cant_obstaculos = 0;
 }
 
 unsigned aleatoria (int maximo, int minimo) {
-	srand (( unsigned)time(NULL));
+    static bool inicializado = false;
+    if (!inicializado) {
+        srand((unsigned)time(NULL));
+        inicializado = true;
+    }
 
-	int numero = rand () % maximo + minimo;
+    int numero = rand() % maximo + minimo;
 
-	return (unsigned)numero;
+    return (unsigned)numero;
+}
+
+unsigned cant_obstaculos_actual_jugador(TP *tp, enum TP_JUGADOR jugador){
+    if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+        return 0;
+    }
+    return tp->jugadores.pista_jugador[jugador]->cant_obstaculos;
 }
 
 unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO obstaculo, unsigned posicion) {
-    if (tp == NULL || jugador != JUGADOR_1 || jugador != JUGADOR_2 || obstaculo != OBSTACULO_DESTREZA || obstaculo != OBSTACULO_FUERZA || obstaculo != OBSTACULO_INTELIGENCIA) {
+    if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
         return 0;
     }
 
     pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
 
     if (posicion >= MAX_LARGO_PISTA) {
-        posicion = MAX_LARGO_PISTA - 1;
+        posicion = pista_jugador->cant_obstaculos;
     }
 
-    for (unsigned i = pista_jugador->largo_actual; i > posicion; i--) {
+    if (strcmp(pista_jugador->pista[posicion], "F") == 0 || strcmp(pista_jugador->pista[posicion], "I") == 0 || strcmp(pista_jugador->pista[posicion], "D") == 0) {
+        return pista_jugador->cant_obstaculos;
+    }
+
+    for (unsigned i = pista_jugador->cant_obstaculos; i > posicion; i--) {
         pista_jugador->pista[i] = pista_jugador->pista[i - 1];
     }
 
-    char *obstaculo_str = NULL;
     switch (obstaculo) {
         case OBSTACULO_FUERZA:
-            obstaculo_str = strdup2(PISTA_FUERZA);
+            pista_jugador->pista[posicion]  = ("F");
             break;
         case OBSTACULO_DESTREZA:
-            obstaculo_str = strdup2(PISTA_DESTREZA);
+            pista_jugador->pista[posicion] = ("D");
             break;
         case OBSTACULO_INTELIGENCIA:
-            obstaculo_str = strdup2(PISTA_INTELIGENCIA);
+            pista_jugador->pista[posicion] = ("I");
             break;
         default:
-            return 0; 
+            return 0;
     }
 
-    if (obstaculo_str == NULL) {
-        return 0;
-    }
+    pista_jugador->cant_obstaculos++;
+    tp->jugadores.pista_jugador[jugador] = pista_jugador;
 
-    pista_jugador->pista[posicion] = obstaculo_str;
-    pista_jugador->largo_actual++;
-
-    return pista_jugador->largo_actual;
+    return pista_jugador->cant_obstaculos;
 }
 
 void imprimir_pista(TP *tp){
@@ -279,24 +289,61 @@ void imprimir_pista(TP *tp){
     printf("\n");
 }
 
-unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
-{
-	return 0;
+unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion) {
+    if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+        return 0;
+    }
+
+    pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
+
+    if (posicion >= MAX_LARGO_PISTA) {
+        posicion = pista_jugador->cant_obstaculos;
+    }
+
+    for (unsigned i = pista_jugador->cant_obstaculos; i > posicion; i--) {
+        pista_jugador->pista[i] = pista_jugador->pista[i - 1];
+    }
+
+    if (strcmp(pista_jugador->pista[posicion], "F") == 0 || strcmp(pista_jugador->pista[posicion], "I") == 0 || strcmp(pista_jugador->pista[posicion], "D") == 0) {
+        pista_jugador->pista[posicion] = PISTA_VACIA; 
+    }
+
+    pista_jugador->cant_obstaculos--;
+    tp->jugadores.pista_jugador[jugador] = pista_jugador;
+
+    return pista_jugador->cant_obstaculos;
 }
 
-char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador)
-{
-	return NULL;
+char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador) {
+    if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+        return NULL;
+    }
+
+    pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
+    char *obstaculos = malloc((pista_jugador->cant_obstaculos + 1) * sizeof(char));
+    if (obstaculos == NULL) return NULL;
+
+    int i = 0;
+    for (i = 0; i < pista_jugador->cant_obstaculos; i++) {
+        if (strcmp(pista_jugador->pista[i], "F") == 0 || strcmp(pista_jugador->pista[i], "D") == 0 || strcmp(pista_jugador->pista[i], "I") == 0 ){
+            obstaculos[i] = pista_jugador->pista[i][0];
+        }
+    }
+    obstaculos[i] = '\0';
+
+    return obstaculos;
 }
 
 void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 {
-	if (tp == NULL || jugador != JUGADOR_1 || jugador != JUGADOR_2) return;
+	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) return;
 
 	for (int i = 0; i < MAX_LARGO_PISTA; i++){
 		tp->jugadores.pista_jugador[jugador]->pista[i] = PISTA_VACIA;
 	}
-    printf("Pista en preparación para la siguiente carrera..");
+
+    tp->jugadores.pista_jugador[jugador]->cant_obstaculos = 0;
+    printf("\nPista en preparación para la siguiente carrera...\n");
 }
 
 unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
@@ -326,12 +373,7 @@ void tp_destruir(TP *tp) {
             free(tp->jugadores.pokemon_seleccionado[i]->nombre);
             free(tp->jugadores.pokemon_seleccionado[i]);
         }
-        if (tp->jugadores.pista_jugador[i] != NULL) {
-            for (unsigned j = 0; j < tp->jugadores.pista_jugador[i]->largo_actual; j++) {
-                free(tp->jugadores.pista_jugador[i]->pista[j]);
-            }
-            free(tp->jugadores.pista_jugador[i]);
-        }
+        free(tp->jugadores.pista_jugador[i]);
     }
 
     free(tp);
