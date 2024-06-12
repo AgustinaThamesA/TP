@@ -229,17 +229,16 @@ int main()
 	pruebas_imprimir_pistas_con_obstaculos();
 
 	pa2m_nuevo_grupo(
-		"\n======================== Pruebas de limpieza de pista ========================");
-	pruebas_limpiar_pista_con_obstaculos();
-
-	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de quitar obstáculos ========================");
 	pruebas_quitar_obstaculo_de_pista();
 
 	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de limpieza de pista ========================");
+	pruebas_limpiar_pista_con_obstaculos();
+
+	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de string de obstáculos ========================");
 	pruebas_string_con_obstaculos_de_cada_pista();
-
 
 	return pa2m_mostrar_reporte();
 }

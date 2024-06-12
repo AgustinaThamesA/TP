@@ -4,6 +4,7 @@
 #include "tp.h"
 #include "abb.h"
 #include "abb_estructura_privada.h"
+#include "lista.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,7 +34,7 @@ typedef struct pista_jugador pista_jugador_t;
 
 void leer_archivo(TP *tp, const char *nombre_archivo);
 bool guardar_nombres_como_string(void *dato, void *aux);
-void creacion_pista(pista_jugador_t *pista_jugador);
+void pista_vacia(pista_jugador_t *pista_jugador);
 unsigned aleatoria (int maximo, int minimo);
 void imprimir_pista(TP *tp);
 
