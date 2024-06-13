@@ -204,6 +204,91 @@ void pruebas_string_con_obstaculos_de_cada_pista(){
 	tp_destruir(tp);
 }
 
+void pruebas_calcular_tiempo_pista(){
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	const char* nombre1 = "Pikachu";
+	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);
+	tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu");
+	pa2m_afirmar(strcmp(poke1->nombre, "Pikachu") == 0, "El pokemon seleccionado por el Jugador 1 es Pikachu.");
+
+	const char* nombre2 = "Bulbasaur";
+	const struct pokemon_info *poke2 = tp_buscar_pokemon(tp, nombre2);
+	tp_seleccionar_pokemon(tp, JUGADOR_2, "Bulbasaur");
+	pa2m_afirmar(strcmp(poke2->nombre, "Bulbasaur") == 0, "El pokemon seleccionado por el Jugador 2 es Bulbasaur.");
+
+	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
+	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
+
+	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
+	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
+
+	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
+	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	printf("\nTiempo pista Jugador 1: %d", tp_calcular_tiempo_pista(tp, JUGADOR_1));
+	printf("\nTiempo pista Jugador 2: %d", tp_calcular_tiempo_pista(tp, JUGADOR_2));
+
+	tp_destruir(tp);
+}
+
+void pruebas_csv_tiempo_pista(){
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	const char* nombre1 = "Pikachu";
+	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);
+	tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu");
+	pa2m_afirmar(strcmp(poke1->nombre, "Pikachu") == 0, "El pokemon seleccionado por el Jugador 1 es Pikachu.");
+
+	const char* nombre2 = "Bulbasaur";
+	const struct pokemon_info *poke2 = tp_buscar_pokemon(tp, nombre2);
+	tp_seleccionar_pokemon(tp, JUGADOR_2, "Bulbasaur");
+	pa2m_afirmar(strcmp(poke2->nombre, "Bulbasaur") == 0, "El pokemon seleccionado por el Jugador 2 es Bulbasaur.");
+
+
+	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
+	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
+
+	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
+	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
+
+	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
+	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
+	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
+
+	imprimir_pista(tp);
+
+	char *obstaculos = tp_tiempo_por_obstaculo(tp, JUGADOR_1);
+
+	printf("\nTiempo por obstáculo en la pista del Jugador 1: %s\n", obstaculos);
+
+	free(obstaculos);
+
+	char *obstaculos2 = tp_tiempo_por_obstaculo(tp, JUGADOR_2);
+
+	printf("\nTiempo por obstáculo en la pista del Jugador 2: %s\n", obstaculos2);
+
+	free(obstaculos2);
+
+	tp_destruir(tp);
+}
+
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -239,6 +324,12 @@ int main()
 	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de string de obstáculos ========================");
 	pruebas_string_con_obstaculos_de_cada_pista();
+
+	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de cálculo de tiempo ========================");
+	pruebas_calcular_tiempo_pista();
+	printf("\n");
+	pruebas_csv_tiempo_pista();
 
 	return pa2m_mostrar_reporte();
 }

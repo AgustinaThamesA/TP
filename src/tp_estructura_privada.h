@@ -29,7 +29,6 @@
 typedef struct jugadores jugadores_t;
 typedef struct pista_jugador pista_jugador_t;
 
-
 // ------------- FUNCIONES AUXILIARES TP.C -------------
 
 void leer_archivo(TP *tp, const char *nombre_archivo);
