@@ -42,7 +42,6 @@ void pruebas_tp_seleccionar_pokemon(){
 
 	seleccionado = tp_seleccionar_pokemon(tp, JUGADOR_1, "Bulbasaur");
 	pa2m_afirmar(seleccionado == false, "El Jugador 1 no puede elegir a Bulbasaur como su pokemon, porque ese pokemon le pertenece al Jugador 2.");
-	
 
 	tp_destruir(tp);
 }
@@ -65,6 +64,10 @@ void pruebas_tp_pokemon_seleccionado() {
 
 void pruebas_imprimir_pistas_vacias(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	establecer_dificultad(tp, 4);
+
+	pa2m_afirmar(lista_vacia(tp->jugadores.pista_jugador[JUGADOR_1]->pista) == false, "lista_t pista1 NO VACÍA.");
+	pa2m_afirmar(lista_vacia(tp->jugadores.pista_jugador[JUGADOR_2]->pista) == false, "lista_t pista2 NO VACÍA.");
 
 	imprimir_pista(tp);
 
@@ -73,6 +76,7 @@ void pruebas_imprimir_pistas_vacias(){
 
 void pruebas_imprimir_pistas_con_obstaculos(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
+	establecer_dificultad(tp, 4);
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
@@ -99,6 +103,8 @@ void pruebas_imprimir_pistas_con_obstaculos(){
 
 void pruebas_limpiar_pista_con_obstaculos(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	establecer_dificultad(tp, 4);
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
@@ -142,6 +148,8 @@ void pruebas_limpiar_pista_con_obstaculos(){
 void pruebas_quitar_obstaculo_de_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
+	establecer_dificultad(tp, 4);
+
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
 
@@ -169,6 +177,8 @@ void pruebas_quitar_obstaculo_de_pista(){
 
 void pruebas_string_con_obstaculos_de_cada_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	establecer_dificultad(tp, 4);
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
@@ -207,6 +217,8 @@ void pruebas_string_con_obstaculos_de_cada_pista(){
 void pruebas_calcular_tiempo_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
+	establecer_dificultad(tp, 4);
+
 	const char* nombre1 = "Pikachu";
 	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);
 	tp_seleccionar_pokemon(tp, JUGADOR_1, "Pikachu");
@@ -243,6 +255,8 @@ void pruebas_calcular_tiempo_pista(){
 
 void pruebas_csv_tiempo_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	establecer_dificultad(tp, 4);
 
 	const char* nombre1 = "Pikachu";
 	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);

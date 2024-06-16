@@ -1,20 +1,7 @@
 #include "tp.h"
 #include "tp_estructura_privada.h"
 
-struct pista_jugador{
-    lista_t *pista;
-    unsigned cant_obstaculos;
-};
-
-struct jugadores {
-    struct pokemon_info *pokemon_seleccionado[2];
-    pista_jugador_t* pista_jugador[2];
-};
-
-struct tp {
-    abb_t* pokemones;
-    jugadores_t jugadores;
-}; 
+// ------------- FUNCIONES AUXILIARES -------------
 
 int comparar_pokemon(void *poke1, void *poke2) {
     struct pokemon_info *pokemon1 = (struct pokemon_info *)poke1;
@@ -32,7 +19,7 @@ char *strdup2(const char *s)
 
 void leer_archivo(TP *tp, const char *nombre_archivo){
     if (tp == NULL) return;
-	FILE *archivo = fopen(nombre_archivo, "r");
+    FILE *archivo = fopen(nombre_archivo, "r");
     if (archivo == NULL) {
         free(tp);
         return;
@@ -46,16 +33,16 @@ void leer_archivo(TP *tp, const char *nombre_archivo){
     }
 
     char poke[256];
-	while (fgets(poke, sizeof(poke), archivo)) {
-	    struct pokemon_info *pokemon = calloc(1, sizeof(struct pokemon_info));
-	    if (pokemon == NULL) {
+    while (fgets(poke, sizeof(poke), archivo)) {
+        struct pokemon_info *pokemon = calloc(1, sizeof(struct pokemon_info));
+        if (pokemon == NULL) {
             abb_destruir(tp->pokemones);
             fclose(archivo);
             free(tp);
             return;
         }
 
-	    char *nombre = strtok(poke, ",");
+        char *nombre = strtok(poke, ",");
         char *fuerza = strtok(NULL, ",");
         char *destreza = strtok(NULL, ",");
         char *inteligencia = strtok(NULL, ",");
@@ -71,13 +58,173 @@ void leer_archivo(TP *tp, const char *nombre_archivo){
             fprintf(stderr, "Error: Formato de línea incorrecto\n");
             free(pokemon);
         }
-	}
+    }
 
-	fclose(archivo);
+    fclose(archivo);
 }
 
-TP *tp_crear(const char *nombre_archivo)
-{
+bool concatenar_nombres(void *elemento, void *aux) {
+    struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
+    char **nombres = (char **)aux;
+
+    if (*nombres == NULL) {
+        *nombres = malloc(strlen(pokemon->nombre) + 1);
+        if (*nombres == NULL) return false;
+        strcpy(*nombres, pokemon->nombre);
+        
+    } else {
+        size_t len_actual = strlen(*nombres);
+        len_actual = strlen(*nombres);
+        size_t len_nuevo = len_actual + strlen(pokemon->nombre) + 3;
+        char *temp = realloc(*nombres, len_nuevo);
+        if (temp == NULL) {
+            free(*nombres);
+            return false;
+        }
+
+        *nombres = temp;
+        strcat(*nombres, ",");
+        strcat(*nombres, " ");
+        strcat(*nombres, pokemon->nombre);
+        
+    }
+
+    return true;
+}
+
+void pista_vacia(TP *tp, enum TP_JUGADOR jugador){
+    pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
+    for (int i = 0; i < pista_jugador->largo_pista; i++){
+        lista_insertar(pista_jugador->pista, PISTA_VACIA);
+	}
+    
+    tp->jugadores.pista_jugador[jugador] = pista_jugador;
+    if (lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) == true)
+        printf("Pista vacía no inicializada correctamente.\n");
+    tp->jugadores.pista_jugador[jugador]->cant_obstaculos = 0;
+}
+
+unsigned aleatoria (int maximo, int minimo) {
+    static bool inicializado = false;
+    if (!inicializado) {
+        srand((unsigned)time(NULL));
+        inicializado = true;
+    }
+
+    int numero = rand() % maximo + minimo;
+
+    return (unsigned)numero;
+}
+
+unsigned cant_obstaculos_actual_jugador(TP *tp, enum TP_JUGADOR jugador){
+    if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+        return 0;
+    }
+    return tp->jugadores.pista_jugador[jugador]->cant_obstaculos;
+}
+
+
+void imprimir_pista(TP *tp) {
+    if (tp == NULL) return;
+
+    printf("\nPista Jugador 1:\n");
+    if (tp->jugadores.pista_jugador[JUGADOR_1] && tp->jugadores.pista_jugador[JUGADOR_1]->pista) {
+        for (size_t i = 0; i < tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista; i++){
+            char *elemento = lista_elemento_en_posicion(tp->jugadores.pista_jugador[JUGADOR_1]->pista, i);
+            printf("%c", *elemento);
+        }
+    }
+    printf("\n");
+
+    printf("Pista Jugador 2:\n");
+    if (tp->jugadores.pista_jugador[JUGADOR_2] && tp->jugadores.pista_jugador[JUGADOR_2]->pista) {
+        for (size_t i = 0; i < tp->jugadores.pista_jugador[JUGADOR_2]->largo_pista; i++){
+            char *elemento = lista_elemento_en_posicion(tp->jugadores.pista_jugador[JUGADOR_2]->pista, i);
+            printf("%c", *elemento);
+        }
+    }
+    printf("\n");
+}
+
+bool concatenar_obstaculos(void *elemento, void *aux){
+    if (elemento == NULL || aux == NULL) return false;
+    char **str_obstaculos = (char **)aux;
+    char *obstaculo = (char *)elemento;
+    if (strcmp(obstaculo, PISTA_FUERZA) == 0 || strcmp(obstaculo, PISTA_DESTREZA) == 0 || strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
+        if (*str_obstaculos == NULL) {
+            *str_obstaculos = malloc(strlen(obstaculo) + 1);
+            strcpy(*str_obstaculos, obstaculo);
+        } else {
+            char *temp = malloc(strlen(*str_obstaculos) + strlen(obstaculo) + 1);
+            strcpy(temp, *str_obstaculos);
+            strcat(temp, obstaculo);
+            free(*str_obstaculos);
+            *str_obstaculos = temp;
+        }
+    }
+    return true;
+}
+
+bool destruir_strdup2(void *elemento, void *aux) {
+    struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
+    free(pokemon->nombre);
+    free(pokemon);
+    return true;
+}
+
+// ------------- FUNCIONES AUXILIARES JUEGO.C -------------
+// DEBERÍA HACER UN JUEGO.H PARA PONER LAS FIRMAS DE LAS FUNCIONES 
+// AUXILIARES AHÍ
+int calculo_puntaje(TP *tp){
+	if (tp == NULL) {
+		return 0;
+	}
+	int puntaje = 0;
+
+	int tiempo_jugador1 = (int)tp_calcular_tiempo_pista(tp, JUGADOR_1);
+	int tiempo_jugador2 = (int)tp_calcular_tiempo_pista(tp, JUGADOR_2);
+	
+	puntaje = 100 - (100 * (abs(tiempo_jugador1-tiempo_jugador2)/(tiempo_jugador1-tiempo_jugador2)));
+
+	return puntaje;
+}
+
+
+void establecer_dificultad(TP *tp, int dificultad){
+	if (tp == NULL) return;
+
+	pista_jugador_t *pista_jugador_1 = tp->jugadores.pista_jugador[JUGADOR_1];
+	pista_jugador_t *pista_jugador_2 = tp->jugadores.pista_jugador[JUGADOR_2];
+
+	if (pista_jugador_1 != NULL) {
+		pista_jugador_1->dificultad = dificultad;
+		pista_jugador_1->max_obstaculos = (unsigned int)dificultad;
+		pista_jugador_1->largo_pista = 5 * (unsigned int)dificultad;
+	}
+
+	if (pista_jugador_2 != NULL) {
+		pista_jugador_2->dificultad = dificultad;
+		pista_jugador_2->max_obstaculos = (unsigned int)dificultad;
+		pista_jugador_2->largo_pista = 5 * (unsigned int)dificultad;
+	}
+
+    tp->jugadores.pista_jugador[JUGADOR_1] = pista_jugador_1;
+    tp->jugadores.pista_jugador[JUGADOR_2] = pista_jugador_2;
+    pista_vacia(tp, JUGADOR_1);
+    pista_vacia(tp, JUGADOR_2);
+
+    printf("\nLargo pista en establecer dificultad: %d\n", tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista);
+	printf("La cantidad de obstáculos a la cual se enfrentará cada jugador es: %d\n", tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos);
+    printf("La dificultad seleccionada es: %d\n", tp->jugadores.pista_jugador[JUGADOR_1]->dificultad);
+}
+
+
+
+
+
+// ------------- FUNCIONES ORIGINALES -------------
+
+TP *tp_crear(const char *nombre_archivo){
     TP *tp = calloc(1,sizeof(TP));
     if (!tp) return NULL;
 
@@ -87,15 +234,19 @@ TP *tp_crear(const char *nombre_archivo)
             free(tp);
             return NULL;
         }
-        tp->jugadores.pista_jugador[i]->cant_obstaculos = 0; 
-        lista_t *pista = lista_crear();
-        if (!pista) {
+        tp->jugadores.pista_jugador[i]->pista = lista_crear();
+        if (!tp->jugadores.pista_jugador[i]->pista) {
             free(tp->jugadores.pista_jugador[i]);
             free(tp);
             return NULL;
         }
-        tp->jugadores.pista_jugador[i]->pista = pista;
-        pista_vacia(tp->jugadores.pista_jugador[i]);
+        
+        tp->jugadores.pista_jugador[i]->cant_obstaculos = 0;
+        tp->jugadores.pista_jugador[i]->largo_pista = 0;
+        tp->jugadores.pista_jugador[i]->max_obstaculos = 0;
+        tp->jugadores.pista_jugador[i]->dificultad = 0;
+
+        
     }
 
     leer_archivo(tp, nombre_archivo);
@@ -118,33 +269,6 @@ const struct pokemon_info *tp_buscar_pokemon(TP *tp, const char *nombre) {
     free(buscar.nombre);
 
     return poke_buscado;
-}
-
-bool concatenar_nombres(void *elemento, void *aux) {
-    struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
-    char **nombres = (char **)aux;
-
-    if (*nombres == NULL) {
-        *nombres = malloc(strlen(pokemon->nombre) + 1);
-        if (*nombres == NULL) return false;
-        strcpy(*nombres, pokemon->nombre);
-    } else {
-        size_t len_actual = strlen(*nombres);
-        size_t len_nuevo = len_actual + strlen(pokemon->nombre) + 3;
-        char *temp = realloc(*nombres, len_nuevo);
-        if (temp == NULL) {
-            free(*nombres);
-            return false;
-        }
-
-        *nombres = temp;
-
-        strcat(*nombres, pokemon->nombre);
-        strcat(*nombres, ",");
-        strcat(*nombres, " ");
-    }
-
-    return true;
 }
 
 char *tp_nombres_disponibles(TP *tp) {
@@ -213,32 +337,6 @@ const struct pokemon_info *tp_pokemon_seleccionado(TP *tp, enum TP_JUGADOR jugad
     return poke;
 }
 
-void pista_vacia(pista_jugador_t *pista_jugador){
-    for (int i = 0; i < MAX_LARGO_PISTA; i++){
-        lista_insertar(pista_jugador->pista, PISTA_VACIA);
-	}
-    pista_jugador->cant_obstaculos = 0;
-}
-
-unsigned aleatoria (int maximo, int minimo) {
-    static bool inicializado = false;
-    if (!inicializado) {
-        srand((unsigned)time(NULL));
-        inicializado = true;
-    }
-
-    int numero = rand() % maximo + minimo;
-
-    return (unsigned)numero;
-}
-
-unsigned cant_obstaculos_actual_jugador(TP *tp, enum TP_JUGADOR jugador){
-    if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
-        return 0;
-    }
-    return tp->jugadores.pista_jugador[jugador]->cant_obstaculos;
-}
-
 unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO obstaculo, unsigned posicion) {
     if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
         return 0;
@@ -246,8 +344,8 @@ unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO
 
     pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
 
-    if (posicion >= MAX_LARGO_PISTA) {
-        posicion = MAX_LARGO_PISTA-1;
+    if (posicion >= pista_jugador->largo_pista) {
+        posicion = pista_jugador->largo_pista-1;
     }
 
     switch (obstaculo) {
@@ -270,26 +368,6 @@ unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO
     return pista_jugador->cant_obstaculos;
 }
 
-void imprimir_pista(TP *tp){
-    if (tp == NULL) return;
-
-    printf("\nPista Jugador 1:\n");
-    if (tp->jugadores.pista_jugador[JUGADOR_1]) {
-        for (size_t i = 0; i < MAX_LARGO_PISTA; i++){
-            char *elemento = lista_elemento_en_posicion(tp->jugadores.pista_jugador[JUGADOR_1]->pista, i);
-            printf("%c", *elemento); // Imprimir el carácter en sí
-        }
-    }
-    printf("\nPista Jugador 2:\n");
-    if (tp->jugadores.pista_jugador[JUGADOR_2]) {
-        for (size_t i = 0; i < MAX_LARGO_PISTA; i++){
-            char *elemento = lista_elemento_en_posicion(tp->jugadores.pista_jugador[JUGADOR_2]->pista, i);
-            printf("%c", *elemento); // Imprimir el carácter en sí
-        }
-    }
-    printf("\n");
-}
-
 unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion) {
     if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
         return 0;
@@ -297,8 +375,8 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
 
     pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
 
-    if (posicion >= MAX_LARGO_PISTA) {
-        posicion = pista_jugador->cant_obstaculos;
+    if (posicion >= pista_jugador->largo_pista) {
+        posicion = pista_jugador->largo_pista-1;
     }
 
     if (strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion), PISTA_FUERZA) == 0 || strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion), PISTA_DESTREZA) == 0 || strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion), PISTA_INTELIGENCIA) == 0){
@@ -310,25 +388,6 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
     tp->jugadores.pista_jugador[jugador] = pista_jugador;
 
     return pista_jugador->cant_obstaculos;
-}
-
-bool concatenar_obstaculos(void *elemento, void *aux){
-    if (elemento == NULL || aux == NULL) return false;
-    char **str_obstaculos = (char **)aux;
-    char *obstaculo = (char *)elemento;
-    if (strcmp(obstaculo, PISTA_FUERZA) == 0 || strcmp(obstaculo, PISTA_DESTREZA) == 0 || strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
-        if (*str_obstaculos == NULL) {
-            *str_obstaculos = malloc(strlen(obstaculo) + 1);
-            strcpy(*str_obstaculos, obstaculo);
-        } else {
-            char *temp = malloc(strlen(*str_obstaculos) + strlen(obstaculo) + 1);
-            strcpy(temp, *str_obstaculos);
-            strcat(temp, obstaculo);
-            free(*str_obstaculos);
-            *str_obstaculos = temp;
-        }
-    }
-    return true;
 }
 
 char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador) {
@@ -349,11 +408,11 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) return;
 
-    for (size_t i = 0; i < MAX_LARGO_PISTA; i++) {
+    for (size_t i = 0; i < tp->jugadores.pista_jugador[jugador]->largo_pista; i++) {
         lista_quitar(tp->jugadores.pista_jugador[jugador]->pista);
     }
 
-    pista_vacia(tp->jugadores.pista_jugador[jugador]);
+    pista_vacia(tp, jugador);
 
     printf("\nPista en preparación para la siguiente carrera...\n");
 }
@@ -369,7 +428,7 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador) {
     struct pokemon_info *pokemon = tp->jugadores.pokemon_seleccionado[jugador];
     
 
-    for (size_t i = 0; i < MAX_LARGO_PISTA; i++) {
+    for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
         char *obstaculo = lista_elemento_en_posicion(pista_jugador->pista, i);
         int tiempo_obstaculo = 0;
         if (strcmp(obstaculo, PISTA_VACIA) == 0) {
@@ -402,7 +461,7 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador) {
     pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
     char *csv = calloc(1, 20 * sizeof(char));
     int fuerza = 0, destreza = 0, inteligencia = 0;
-    for (size_t i = 0; i < MAX_LARGO_PISTA; i++) {
+    for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
         char *obstaculo = lista_elemento_en_posicion(pista_jugador->pista, i);
         if (strcmp(obstaculo, PISTA_VACIA) != 0){
             if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
@@ -424,13 +483,6 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador) {
     return csv;
 }
 
-bool destruir_strdup2(void *elemento, void *aux) {
-    struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
-    free(pokemon->nombre);
-    free(pokemon);
-    return true;
-}
-
 void tp_destruir(TP *tp) {
     if (tp == NULL) return;
     abb_con_cada_elemento(tp->pokemones, INORDEN, destruir_strdup2, NULL);
@@ -442,6 +494,7 @@ void tp_destruir(TP *tp) {
             free(tp->jugadores.pokemon_seleccionado[i]);
         }
         lista_destruir(tp->jugadores.pista_jugador[i]->pista);
+        
         free(tp->jugadores.pista_jugador[i]);
     }
 
