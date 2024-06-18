@@ -65,6 +65,11 @@ void pruebas_tp_pokemon_seleccionado() {
 void pruebas_imprimir_pistas_vacias(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
 
 	pa2m_afirmar(lista_vacia(tp->jugadores.pista_jugador[JUGADOR_1]->pista) == false, "lista_t pista1 NO VACÍA.");
 	pa2m_afirmar(lista_vacia(tp->jugadores.pista_jugador[JUGADOR_2]->pista) == false, "lista_t pista2 NO VACÍA.");
@@ -77,21 +82,25 @@ void pruebas_imprimir_pistas_vacias(){
 void pruebas_imprimir_pistas_con_obstaculos(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
+
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
-	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion1 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1) == 1, "Hay 1 obstáculo en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1) == 1, "Hay 1 obstáculo en la pista del Jugador 2.");
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
-	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion2 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 2.");
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
-	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion3 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
@@ -105,21 +114,24 @@ void pruebas_limpiar_pista_con_obstaculos(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
-	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion1 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
-	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion2 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
-	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion3 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
@@ -149,15 +161,18 @@ void pruebas_quitar_obstaculo_de_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
-	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion1 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
-	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion2 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 	
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 2.");
@@ -179,20 +194,23 @@ void pruebas_string_con_obstaculos_de_cada_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
-	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion1 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
-	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion2 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
-	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion3 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 	
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
@@ -218,6 +236,9 @@ void pruebas_calcular_tiempo_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
 
 	const char* nombre1 = "Pikachu";
 	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);
@@ -230,17 +251,17 @@ void pruebas_calcular_tiempo_pista(){
 	pa2m_afirmar(strcmp(poke2->nombre, "Bulbasaur") == 0, "El pokemon seleccionado por el Jugador 2 es Bulbasaur.");
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
-	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion1 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
-	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion2 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
-	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion3 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");
@@ -257,6 +278,9 @@ void pruebas_csv_tiempo_pista(){
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
 	establecer_dificultad(tp, 4);
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 20;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 4;
+	pista_vacia(tp, JUGADOR_1);
 
 	const char* nombre1 = "Pikachu";
 	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);
@@ -270,18 +294,18 @@ void pruebas_csv_tiempo_pista(){
 
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
-	unsigned posicion1 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion1 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
-	unsigned posicion2 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion2 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
-	unsigned posicion3 = aleatoria(MAX_LARGO_PISTA, 0);
+	unsigned posicion3 = aleatoria((int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
 	
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2) == 2, "Hay 2 obstáculos en la pista del Jugador 1.");
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo3, posicion3) == 3, "Hay 3 obstáculos en la pista del Jugador 2.");

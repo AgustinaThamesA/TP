@@ -12,13 +12,9 @@
 #include <strings.h>
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 
 #define _POSIX_C_SOURCE 200809L
-
-#define DIFICULTAD_FACIL 1
-#define DIFICULTAD_NORMAL 2
-#define DIFICULTAD_DIFICIL 3
-#define DIFICULATD_IMPOSIBLE 4
 
 #define MAX_LARGO_PISTA 50
 #define PISTA_VACIA "_"
@@ -31,13 +27,14 @@
 typedef struct pista_jugador{
     lista_t *pista;
     unsigned cant_obstaculos;
-    unsigned largo_pista; // REVISAR
-    unsigned max_obstaculos; // REVISAR
-    lista_t *puntajes; // REVISAR
-    int dificultad; // REVISAR
+    unsigned largo_pista;
+    unsigned max_obstaculos; 
+    lista_t *puntajes;
+    int dificultad;
+    double velocidad;
 }pista_jugador_t;
 
-typedef struct jugadores { // CAMBIAR A TDA MENU ???
+typedef struct jugadores { 
     struct pokemon_info *pokemon_seleccionado[2];
     pista_jugador_t* pista_jugador[2];
 }jugadores_t;
@@ -77,8 +74,14 @@ int calculo_puntaje(TP *tp);
 
 void establecer_dificultad(TP *tp, int dificultad);
 
+void seleccionar_dificultad(TP *tp);
 
+void mostrar_pokemones_disponibles(TP *tp);
 
+char *tp_obtener_nombre_pokemon(TP *tp, unsigned int index);
 
+void seleccionar_pokemon(TP *tp);
+
+void mostrar_menu_principal(int *opcion);
 
 #endif // __TP_ESTRUCTURA_PRIVADA_H__

@@ -123,7 +123,6 @@ unsigned cant_obstaculos_actual_jugador(TP *tp, enum TP_JUGADOR jugador){
     return tp->jugadores.pista_jugador[jugador]->cant_obstaculos;
 }
 
-
 void imprimir_pista(TP *tp) {
     if (tp == NULL) return;
 
@@ -175,48 +174,9 @@ bool destruir_strdup2(void *elemento, void *aux) {
 // ------------- FUNCIONES AUXILIARES JUEGO.C -------------
 // DEBERÍA HACER UN JUEGO.H PARA PONER LAS FIRMAS DE LAS FUNCIONES 
 // AUXILIARES AHÍ
-int calculo_puntaje(TP *tp){
-	if (tp == NULL) {
-		return 0;
-	}
-	int puntaje = 0;
-
-	int tiempo_jugador1 = (int)tp_calcular_tiempo_pista(tp, JUGADOR_1);
-	int tiempo_jugador2 = (int)tp_calcular_tiempo_pista(tp, JUGADOR_2);
-	
-	puntaje = 100 - (100 * (abs(tiempo_jugador1-tiempo_jugador2)/(tiempo_jugador1-tiempo_jugador2)));
-
-	return puntaje;
-}
 
 
-void establecer_dificultad(TP *tp, int dificultad){
-	if (tp == NULL) return;
 
-	pista_jugador_t *pista_jugador_1 = tp->jugadores.pista_jugador[JUGADOR_1];
-	pista_jugador_t *pista_jugador_2 = tp->jugadores.pista_jugador[JUGADOR_2];
-
-	if (pista_jugador_1 != NULL) {
-		pista_jugador_1->dificultad = dificultad;
-		pista_jugador_1->max_obstaculos = (unsigned int)dificultad;
-		pista_jugador_1->largo_pista = 5 * (unsigned int)dificultad;
-	}
-
-	if (pista_jugador_2 != NULL) {
-		pista_jugador_2->dificultad = dificultad;
-		pista_jugador_2->max_obstaculos = (unsigned int)dificultad;
-		pista_jugador_2->largo_pista = 5 * (unsigned int)dificultad;
-	}
-
-    tp->jugadores.pista_jugador[JUGADOR_1] = pista_jugador_1;
-    tp->jugadores.pista_jugador[JUGADOR_2] = pista_jugador_2;
-    pista_vacia(tp, JUGADOR_1);
-    pista_vacia(tp, JUGADOR_2);
-
-    printf("\nLargo pista en establecer dificultad: %d\n", tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista);
-	printf("La cantidad de obstáculos a la cual se enfrentará cada jugador es: %d\n", tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos);
-    printf("La dificultad seleccionada es: %d\n", tp->jugadores.pista_jugador[JUGADOR_1]->dificultad);
-}
 
 
 
@@ -245,10 +205,9 @@ TP *tp_crear(const char *nombre_archivo){
         tp->jugadores.pista_jugador[i]->largo_pista = 0;
         tp->jugadores.pista_jugador[i]->max_obstaculos = 0;
         tp->jugadores.pista_jugador[i]->dificultad = 0;
-
+        tp->jugadores.pista_jugador[i]->velocidad = 0;
         
     }
-
     leer_archivo(tp, nombre_archivo);
     
     return tp;
@@ -351,12 +310,15 @@ unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO
     switch (obstaculo) {
         case OBSTACULO_FUERZA:
             lista_insertar_en_posicion(pista_jugador->pista, PISTA_FUERZA, posicion);
+            
             break;
         case OBSTACULO_DESTREZA:
             lista_insertar_en_posicion(pista_jugador->pista, PISTA_DESTREZA, posicion);
+            
             break;
         case OBSTACULO_INTELIGENCIA:
             lista_insertar_en_posicion(pista_jugador->pista, PISTA_INTELIGENCIA, posicion);
+            
             break;
         default:
             return 0;
