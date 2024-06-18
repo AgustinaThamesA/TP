@@ -14,30 +14,30 @@ int main(int argc, char const *argv[])
 	do {
 		mostrar_menu_principal(&opcion);
 
-		switch (opcion){
-			case 1:
-				seleccionar_dificultad(tp);
-				mostrar_pokemones_disponibles(tp);
-				seleccionar_pokemon(tp);
-				break;
-			case 2:
-				printf("¡Vamos a correr la carrera!...\n");
-				preparar_carrera(tp);
+		switch (opcion) {
+		case 1:
+			seleccionar_dificultad(tp);
+			mostrar_pokemones_disponibles(tp);
+			seleccionar_pokemon(tp);
+			break;
+		case 2:
+			printf("¡Vamos a correr la carrera!...\n");
+			preparar_carrera(tp);
 
-				printf("\n\nLas pistas ya están listas, échales un vistazo..\n\n");
-				imprimir_pista(tp);
+			printf("\n\nLas pistas ya están listas, échales un vistazo..\n\n");
+			imprimir_pista(tp);
 
-				// Correr la carrera
-				correr_carrera(tp);
+			// Correr la carrera
+			correr_carrera(tp);
 
-				
-				break;
-			case 3:
-				printf("Saliendo del juego..\n");
-				printf("El puntaje final es: %d\n", calculo_puntaje(tp));
-				break;
-			default:
-				printf("Revisa que la opción ingresada debe ser una de las opciones especificadas al principio!\n");
+			break;
+		case 3:
+			printf("Saliendo del juego..\n");
+			printf("El puntaje final es: %d\n",
+			       calculo_puntaje(tp));
+			break;
+		default:
+			printf("Revisa que la opción ingresada debe ser una de las opciones especificadas al principio!\n");
 		}
 	} while (opcion < 3);
 

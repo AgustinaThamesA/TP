@@ -6,7 +6,7 @@
 
 nodo_abb_t *nodo_crear(void *elemento)
 {
-	nodo_abb_t *nodo = calloc(1,sizeof(nodo_abb_t));
+	nodo_abb_t *nodo = calloc(1, sizeof(nodo_abb_t));
 	if (nodo == NULL) {
 		return NULL;
 	}
@@ -18,7 +18,7 @@ nodo_abb_t *nodo_crear(void *elemento)
 
 abb_t *abb_crear(abb_comparador comparador)
 {
-	abb_t *abb = calloc(1,sizeof(abb_t));
+	abb_t *abb = calloc(1, sizeof(abb_t));
 	if (abb == NULL || comparador == NULL) {
 		free(abb);
 		return NULL;
