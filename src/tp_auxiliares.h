@@ -3,7 +3,6 @@
 
 #include "tp_estructura_privada.h"
 
-
 int calculo_puntaje(TP *tp);
 
 void establecer_dificultad(TP *tp, int dificultad);

@@ -63,6 +63,9 @@ void leer_archivo(TP *tp, const char *nombre_archivo)
 		} else {
 			fprintf(stderr, "Error: Formato de línea incorrecto\n");
 			free(pokemon);
+			abb_destruir(tp->pokemones);
+			fclose(archivo);
+			free(tp);
 		}
 	}
 
@@ -207,6 +210,8 @@ bool destruir_strdup2(void *elemento, void *aux)
 
 TP *tp_crear(const char *nombre_archivo)
 {
+	if (nombre_archivo == NULL)
+		return NULL;
 	TP *tp = calloc(1, sizeof(TP));
 	if (!tp)
 		return NULL;
@@ -444,7 +449,8 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (tp == NULL || tp->jugadores.pokemon_seleccionado[jugador] == NULL ||
-	    tp->jugadores.pista_jugador[jugador]->cant_obstaculos == 0) {
+	    tp->jugadores.pista_jugador[jugador]->cant_obstaculos == 0 ||
+	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) == true) {
 		return 0;
 	}
 
