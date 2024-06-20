@@ -267,10 +267,12 @@ TP *tp_crear(const char *nombre_archivo)
 		}
 
 		tp->jugadores.pista_jugador[i]->cant_obstaculos = 0;
-		tp->jugadores.pista_jugador[i]->largo_pista = 0;
+		tp->jugadores.pista_jugador[i]->largo_pista = 20;
 		tp->jugadores.pista_jugador[i]->max_obstaculos = 0;
 		tp->jugadores.pista_jugador[i]->dificultad = 0;
 		tp->jugadores.pista_jugador[i]->velocidad = 0;
+
+		pista_vacia(tp, i);
 	}
 	leer_archivo(tp, archivo);
 
