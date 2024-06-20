@@ -236,6 +236,12 @@ TP *tp_crear(const char *nombre_archivo)
 {
 	if (nombre_archivo == NULL)
 		return NULL;
+
+	const char *extension = strrchr(nombre_archivo, '.');
+	if (extension == NULL || strcmp(extension, ".txt") != 0) {
+		return NULL; // Not a .txt file, return NULL
+	}
+
 	TP *tp = calloc(1, sizeof(TP));
 	if (!tp)
 		return NULL;
@@ -387,7 +393,7 @@ unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
 	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
 
 	if (posicion >= pista_jugador->largo_pista) {
-		posicion = pista_jugador->largo_pista - 1;
+		posicion = pista_jugador->largo_pista - 2;
 	}
 
 	switch (obstaculo) {

@@ -115,7 +115,8 @@ void pruebas_imprimir_pistas_con_obstaculos()
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1,
 					  posicion1) == 1,
@@ -126,7 +127,8 @@ void pruebas_imprimir_pistas_con_obstaculos()
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
 	unsigned posicion2 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2,
 					  posicion2) == 2,
@@ -137,7 +139,8 @@ void pruebas_imprimir_pistas_con_obstaculos()
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
 	unsigned posicion3 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3,
 					  posicion3) == 3,
@@ -162,21 +165,24 @@ void pruebas_limpiar_pista_con_obstaculos()
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
 	unsigned posicion2 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
 	unsigned posicion3 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3,
 					  posicion3) == 3,
@@ -219,14 +225,20 @@ void pruebas_quitar_obstaculo_de_pista()
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
+
+	printf("Posición 1: %u\n", posicion1);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
 	unsigned posicion2 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
+
+	printf("Posición 2: %u\n", posicion2);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2,
 					  posicion2) == 2,
@@ -261,20 +273,23 @@ void pruebas_string_con_obstaculos_de_cada_pista()
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
 	unsigned posicion2 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
 	unsigned posicion3 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2,
 					  posicion2) == 2,
@@ -323,19 +338,22 @@ void pruebas_calcular_tiempo_pista()
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
 	unsigned posicion2 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2, posicion2);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
 	unsigned posicion3 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo3,
 					  posicion3) == 3,
@@ -377,20 +395,23 @@ void pruebas_csv_tiempo_pista()
 
 	enum TP_OBSTACULO obstaculo1 = OBSTACULO_FUERZA;
 	unsigned posicion1 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo1, posicion1);
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo1, posicion1);
 
 	enum TP_OBSTACULO obstaculo2 = OBSTACULO_DESTREZA;
 	unsigned posicion2 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	tp_agregar_obstaculo(tp, JUGADOR_2, obstaculo2, posicion2);
 
 	enum TP_OBSTACULO obstaculo3 = OBSTACULO_INTELIGENCIA;
 	unsigned posicion3 = aleatoria(
-		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista, 0);
+		(int)tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista - 1,
+		0);
 
 	pa2m_afirmar(tp_agregar_obstaculo(tp, JUGADOR_1, obstaculo2,
 					  posicion2) == 2,
@@ -425,10 +446,14 @@ void pruebas_control_chanu()
 	pa2m_afirmar(tp1 == NULL,
 		     "No puedo crear un TP con un archivo inexistente.");
 
-	pa2m_afirmar(tp1 == NULL,
+	tp_destruir(tp1);
+
+	TP *tp2 = tp_crear("lista.c");
+
+	pa2m_afirmar(tp2 == NULL,
 		     "No puedo crear un TP con un archivo incorrecto.");
 
-	tp_destruir(tp1);
+	tp_destruir(tp2);
 
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
