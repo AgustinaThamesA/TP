@@ -67,11 +67,11 @@ void leer_archivo(TP *tp, FILE *archivo)
 		} else {
 			fprintf(stderr, "Error: Formato de línea incorrecto\n");
 			fclose(archivo);
-			free(tp);
+			tp_destruir(tp);
 			return;
 		}
 		if (feof(archivo)) {
-			return;
+			break;
 		}
 		if (ferror(archivo)) {
 			perror("Error reading file");
@@ -93,8 +93,8 @@ void leer_archivo(TP *tp, FILE *archivo)
 	abb_con_cada_elemento(tp->pokemones, INORDEN, guardar_alfabeticamente,
 			      temporal);
 
-	abb_destruir(tp->pokemones); // Liberamos el árbol original
-	tp->pokemones = temporal; // Asignamos el árbol ordenado alfabéticamente
+	abb_destruir(tp->pokemones);
+	tp->pokemones = temporal;
 
 	fclose(archivo);
 }
@@ -239,7 +239,7 @@ TP *tp_crear(const char *nombre_archivo)
 
 	const char *extension = strrchr(nombre_archivo, '.');
 	if (extension == NULL || strcmp(extension, ".txt") != 0) {
-		return NULL; // Not a .txt file, return NULL
+		return NULL;
 	}
 
 	TP *tp = calloc(1, sizeof(TP));
@@ -552,12 +552,12 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 	}
 
 	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
-	char *csv = malloc((pista_jugador->cant_obstaculos * 3 + 1) *
-			   sizeof(char)); // Aumentar el tamaño del buffer
+	char *csv =
+		malloc((pista_jugador->cant_obstaculos * 3 + 1) * sizeof(char));
 	if (!csv) {
 		return NULL;
 	}
-	csv[0] = '\0'; // Inicializar cadena vacía
+	csv[0] = '\0';
 
 	struct pokemon_info *pokemon =
 		tp->jugadores.pokemon_seleccionado[jugador];
@@ -584,8 +584,7 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 			if (strlen(csv) > 0) {
 				strcat(csv, ",");
 			}
-			char tiempo_str
-				[12]; // Aumentar el tamaño del buffer temporal
+			char tiempo_str[12];
 			sprintf(tiempo_str, "%d", tiempo_obstaculo);
 			strcat(csv, tiempo_str);
 		}
@@ -598,6 +597,7 @@ void tp_destruir(TP *tp)
 {
 	if (tp == NULL)
 		return;
+
 	abb_con_cada_elemento(tp->pokemones, INORDEN, destruir_strdup2, NULL);
 	abb_destruir(tp->pokemones);
 
