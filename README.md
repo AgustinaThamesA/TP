@@ -1,6 +1,6 @@
 # TP: Carrera de obstáculos
 
-## Repositorio de (Nombre Apellido) - (Padrón) - (Mail)
+## Repositorio de Agustina Thames Alderete - 111287 - athames@fi.uba.ar
 
 - Para ejecutar con valgrind usando mis pruebas:
 
