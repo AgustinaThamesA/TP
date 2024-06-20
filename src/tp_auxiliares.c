@@ -101,17 +101,20 @@ void seleccionar_pokemon(TP *tp)
 	printf("Ingrese el nombre del pokemon que desea seleccionar: ");
 	if (scanf("%255s", nombre) != 1) {
 		fprintf(stderr, "Error al leer la opción\n");
+		return;
 	} else if (tp_buscar_pokemon(tp, nombre) == NULL) {
 		seleccionar_pokemon(tp);
 		return;
 	}
 	tp_seleccionar_pokemon(tp, JUGADOR_1, nombre);
+	const struct pokemon_info *poke_jugador =
+		tp_pokemon_seleccionado(tp, JUGADOR_1);
 
 	unsigned int poke_compu;
 	do {
 		poke_compu = aleatoria(tp_cantidad_pokemon(tp), 0);
-	} while (strcmp(tp_obtener_nombre_pokemon(tp, poke_compu), nombre) ==
-		 0);
+	} while (strcmp(tp_obtener_nombre_pokemon(tp, poke_compu),
+			poke_jugador->nombre) == 0);
 
 	tp_seleccionar_pokemon(tp, JUGADOR_2,
 			       tp_obtener_nombre_pokemon(tp, poke_compu));

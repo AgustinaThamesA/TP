@@ -97,6 +97,8 @@ void leer_archivo(TP *tp, FILE *archivo)
 
 	abb_destruir(tp->pokemones); // Liberamos el árbol original
 	tp->pokemones = temporal; // Asignamos el árbol ordenado alfabéticamente
+
+	fclose(archivo);
 }
 
 bool concatenar_nombres(void *elemento, void *aux)
@@ -276,7 +278,7 @@ TP *tp_crear(const char *nombre_archivo)
 	}
 	leer_archivo(tp, archivo);
 
-	fclose(archivo);
+	
 
 	return tp;
 }
