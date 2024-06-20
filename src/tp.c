@@ -25,7 +25,7 @@ bool guardar_alfabeticamente(void *elemento, void *aux)
 		return false;
 	struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
 	abb_t *auxiliar = aux;
-	printf("%s\n", pokemon->nombre);
+	//printf("%s\n", pokemon->nombre);
 	abb_insertar(auxiliar, pokemon);
 	return true;
 }
@@ -68,6 +68,7 @@ void leer_archivo(TP *tp, FILE *archivo)
 			abb_insertar(tp->pokemones, pokemon);
 		} else {
 			fprintf(stderr, "Error: Formato de línea incorrecto\n");
+			free(pokemon);
 			fclose(archivo);
 			tp_destruir(tp);
 			return;
@@ -77,6 +78,7 @@ void leer_archivo(TP *tp, FILE *archivo)
 		}
 		if (ferror(archivo)) {
 			perror("Error reading file");
+			free(pokemon);
 			abb_destruir(tp->pokemones);
 			fclose(archivo);
 			free(tp);
@@ -124,7 +126,6 @@ bool concatenar_nombres(void *elemento, void *aux)
 
 		*nombres = temp;
 		strcat(*nombres, ",");
-		strcat(*nombres, " ");
 		strcat(*nombres, pokemon->nombre);
 	}
 
@@ -137,13 +138,15 @@ void pista_vacia(TP *tp, enum TP_JUGADOR jugador)
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		lista_insertar_en_posicion(pista_jugador->pista, PISTA_VACIA,
 					   i);
-		printf("Posición %ld vacía\n", i);
+		//printf("Posición %ld vacía\n", i);
 	}
 
 	tp->jugadores.pista_jugador[jugador] = pista_jugador;
 	if (lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) == true)
 		printf("Pista vacía no inicializada correctamente.\n");
 	tp->jugadores.pista_jugador[jugador]->cant_obstaculos = 0;
+	printf("Pista con obstáculos en: %d.\n",
+	       tp->jugadores.pista_jugador[jugador]->cant_obstaculos);
 }
 
 unsigned aleatoria(int maximo, int minimo)
