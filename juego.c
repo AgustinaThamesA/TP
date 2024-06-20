@@ -5,9 +5,6 @@
 
 int main(int argc, char const *argv[])
 {
-	//Se recomienda pasar el archivo de texto con los pokemon como argumento al ejecutar el programa
-
-	//crear el juego
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
 	int opcion = 0;
@@ -26,10 +23,7 @@ int main(int argc, char const *argv[])
 
 			printf("\n\nLas pistas ya están listas, échales un vistazo..\n\n");
 			imprimir_pista(tp);
-
-			// Correr la carrera
 			correr_carrera(tp);
-
 			break;
 		case 3:
 			printf("Saliendo del juego..\n");
