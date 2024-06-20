@@ -21,9 +21,11 @@ char *strdup2(const char *s)
 
 bool guardar_alfabeticamente(void *elemento, void *aux)
 {
+	if (elemento == NULL)
+		return false;
 	struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
 	abb_t *auxiliar = aux;
-
+	printf("%s\n", pokemon->nombre);
 	abb_insertar(auxiliar, pokemon);
 	return true;
 }
@@ -135,6 +137,7 @@ void pista_vacia(TP *tp, enum TP_JUGADOR jugador)
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		lista_insertar_en_posicion(pista_jugador->pista, PISTA_VACIA,
 					   i);
+		printf("Posición %ld vacía\n", i);
 	}
 
 	tp->jugadores.pista_jugador[jugador] = pista_jugador;
@@ -458,7 +461,7 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
 	tp->jugadores.pista_jugador[jugador] = pista_jugador;
 
 	printf("Cantidad de obstáculos después de eliminar: %u\n",
-	       pista_jugador->cant_obstaculos);
+	       tp->jugadores.pista_jugador[jugador]->cant_obstaculos);
 	return tp->jugadores.pista_jugador[jugador]->cant_obstaculos;
 }
 
@@ -488,7 +491,7 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 	lista_t *pista = tp->jugadores.pista_jugador[jugador]->pista;
 
 	while (!lista_vacia(pista)) {
-		lista_quitar_de_posicion(pista, 0);
+		lista_quitar(pista);
 	}
 
 	tp->jugadores.pista_jugador[jugador]->pista = pista;
