@@ -472,9 +472,7 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 		char *obstaculo =
 			lista_elemento_en_posicion(pista_jugador->pista, i);
 		int tiempo_obstaculo = 0;
-		if (strcmp(obstaculo, PISTA_VACIA) == 0) {
-			tiempo_obstaculo = 0;
-		} else if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
+		if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->fuerza -
 					       obstaculos_seguidos[0]);
 			obstaculos_seguidos[0]++;

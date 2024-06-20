@@ -33,8 +33,6 @@ int main(int argc, char const *argv[])
 			break;
 		case 3:
 			printf("Saliendo del juego..\n");
-			printf("El puntaje final es: %d\n",
-			       calculo_puntaje(tp));
 			break;
 		default:
 			printf("Revisa que la opción ingresada debe ser una de las opciones especificadas al principio!\n");

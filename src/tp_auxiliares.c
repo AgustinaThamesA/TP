@@ -237,11 +237,7 @@ double calcular_velocidad(TP *tp, enum TP_JUGADOR jugador, size_t posicion)
 	double velocidad = pista_jugador->velocidad;
 
 	if (strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion),
-		   PISTA_VACIA) == 0) {
-		return velocidad;
-	} else if (strcmp(lista_elemento_en_posicion(pista_jugador->pista,
-						     posicion),
-			  PISTA_FUERZA) == 0) {
+		   PISTA_FUERZA) == 0) {
 		velocidad -= (pokemon_jugador->fuerza / 10);
 	} else if (strcmp(lista_elemento_en_posicion(pista_jugador->pista,
 						     posicion),
@@ -273,21 +269,15 @@ double calcular_velocidad(TP *tp, enum TP_JUGADOR jugador, size_t posicion)
 
 void avanzar_pokemon(TP *tp, enum TP_JUGADOR jugador, double distancia)
 {
-	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2) ||
+	    distancia >= tp->jugadores.pista_jugador[jugador]->largo_pista) {
 		return;
 	}
 
-	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
 	double velocidad_actual =
 		calcular_velocidad(tp, jugador, (size_t)distancia);
 	distancia += velocidad_actual;
 
-	if (distancia < pista_jugador->largo_pista) {
-		lista_quitar_de_posicion(pista_jugador->pista,
-					 (size_t)distancia);
-		lista_insertar_en_posicion(pista_jugador->pista, "P",
-					   (size_t)distancia);
-	}
 	imprimir_pista(tp);
 }
 
@@ -310,7 +300,7 @@ void correr_carrera(TP *tp)
 	pista_jugador_1->velocidad = velocidad_jugador1;
 	pista_jugador_2->velocidad = velocidad_jugador2;
 
-	while (distancia_recorrida_jugador1 <= pista_jugador_1->largo_pista ||
+	while (distancia_recorrida_jugador1 <= pista_jugador_1->largo_pista &&
 	       distancia_recorrida_jugador2 <= pista_jugador_2->largo_pista) {
 		// Update velocities only when necessary
 		if (turno % 2 == 0) {
@@ -358,6 +348,9 @@ void correr_carrera(TP *tp)
 
 		sleep(1); // pausa de 1 segundo para ver el progreso
 	}
+
+	int puntaje = calculo_puntaje(tp);
+	printf("Puntaje final: %d\n", puntaje);
 
 	// Mostrar el resultado de la carrera
 	printf("¡La carrera ha terminado!\n");
