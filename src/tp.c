@@ -19,15 +19,10 @@ char *strdup2(const char *s)
 	return s2;
 }
 
-void leer_archivo(TP *tp, const char *nombre_archivo)
+void leer_archivo(TP *tp, FILE *archivo)
 {
-	if (tp == NULL)
+	if (tp == NULL || archivo == NULL)
 		return;
-	FILE *archivo = fopen(nombre_archivo, "r");
-	if (archivo == NULL) {
-		free(tp);
-		return;
-	}
 
 	tp->pokemones = abb_crear(comparar_pokemon);
 	if (tp->pokemones == NULL) {
@@ -62,14 +57,22 @@ void leer_archivo(TP *tp, const char *nombre_archivo)
 			abb_insertar(tp->pokemones, pokemon);
 		} else {
 			fprintf(stderr, "Error: Formato de línea incorrecto\n");
-			free(pokemon);
-			abb_destruir(tp->pokemones);
 			fclose(archivo);
 			free(tp);
 		}
+		if (feof(archivo)) {
+			// Handle end-of-file condition
+			return;
+		}
+		if (ferror(archivo)) {
+			// Handle read error
+			perror("Error reading file");
+			abb_destruir(tp->pokemones);
+			fclose(archivo);
+			free(tp);
+			return;
+		}
 	}
-
-	fclose(archivo);
 }
 
 bool concatenar_nombres(void *elemento, void *aux)
@@ -202,10 +205,6 @@ bool destruir_strdup2(void *elemento, void *aux)
 	return true;
 }
 
-// ------------- FUNCIONES AUXILIARES JUEGO.C -------------
-// DEBERÍA HACER UN JUEGO.H PARA PONER LAS FIRMAS DE LAS FUNCIONES
-// AUXILIARES AHÍ
-
 // ------------- FUNCIONES ORIGINALES -------------
 
 TP *tp_crear(const char *nombre_archivo)
@@ -215,6 +214,12 @@ TP *tp_crear(const char *nombre_archivo)
 	TP *tp = calloc(1, sizeof(TP));
 	if (!tp)
 		return NULL;
+
+	FILE *archivo = fopen(nombre_archivo, "r");
+	if (archivo == NULL) {
+		free(tp);
+		return NULL;
+	}
 
 	for (int i = 0; i < 2; i++) {
 		tp->jugadores.pista_jugador[i] =
@@ -236,7 +241,9 @@ TP *tp_crear(const char *nombre_archivo)
 		tp->jugadores.pista_jugador[i]->dificultad = 0;
 		tp->jugadores.pista_jugador[i]->velocidad = 0;
 	}
-	leer_archivo(tp, nombre_archivo);
+	leer_archivo(tp, archivo);
+
+	fclose(archivo);
 
 	return tp;
 }
@@ -396,12 +403,11 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
 		posicion = pista_jugador->largo_pista - 1;
 	}
 
-	if (strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion),
-		   PISTA_FUERZA) == 0 ||
-	    strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion),
-		   PISTA_DESTREZA) == 0 ||
-	    strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion),
-		   PISTA_INTELIGENCIA) == 0) {
+	char *obstaculo =
+		lista_elemento_en_posicion(pista_jugador->pista, posicion);
+	if (obstaculo != NULL && (strcmp(obstaculo, PISTA_FUERZA) == 0 ||
+				  strcmp(obstaculo, PISTA_DESTREZA) == 0 ||
+				  strcmp(obstaculo, PISTA_INTELIGENCIA) == 0)) {
 		lista_quitar_de_posicion(pista_jugador->pista, posicion);
 		lista_insertar_en_posicion(pista_jugador->pista, PISTA_VACIA,
 					   posicion);

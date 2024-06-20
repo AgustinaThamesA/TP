@@ -82,8 +82,10 @@ char *tp_obtener_nombre_pokemon(TP *tp, unsigned int index)
 	}
 
 	void *array[tp_cantidad_pokemon(tp)];
-	size_t elementos_recorridos = abb_recorrer(
-		tp->pokemones, INORDEN, array, (size_t)tp_cantidad_pokemon(tp));
+	size_t elementos_recorridos =
+		abb_recorrer(tp->pokemones, PREORDEN, array,
+			     (size_t)tp_cantidad_pokemon(tp));
+	// pongo preorden para demostrar que están en orden alfabético gracias al comparador
 
 	if (elementos_recorridos <= index) {
 		return NULL;

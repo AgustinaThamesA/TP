@@ -418,6 +418,30 @@ void pruebas_csv_tiempo_pista()
 	tp_destruir(tp);
 }
 
+void pruebas_control_chanu()
+{
+	TP *tp1 = tp_crear("ejemplo.txt");
+
+	pa2m_afirmar(tp1 == NULL,
+		     "No puedo crear un TP con un archivo inexistente.");
+
+	pa2m_afirmar(tp1 == NULL,
+		     "No puedo crear un TP con un archivo incorrecto.");
+
+	tp_destruir(tp1);
+
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	pa2m_afirmar(
+		cant_obstaculos_actual_jugador(tp, JUGADOR_1) == 0,
+		"No hay obstáculos inicialmente en la pista del Jugador 1.");
+	pa2m_afirmar(
+		cant_obstaculos_actual_jugador(tp, JUGADOR_2) == 0,
+		"No hay obstáculos inicialmente en la pista del Jugador 2.");
+
+	tp_destruir(tp);
+}
+
 int main()
 {
 	pa2m_nuevo_grupo(
@@ -459,6 +483,10 @@ int main()
 	pruebas_calcular_tiempo_pista();
 	printf("\n");
 	pruebas_csv_tiempo_pista();
+
+	pa2m_nuevo_grupo(
+		"\n======================== Pruebas de chanu ========================");
+	pruebas_control_chanu();
 
 	return pa2m_mostrar_reporte();
 }
