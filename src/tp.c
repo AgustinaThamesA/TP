@@ -71,11 +71,9 @@ void leer_archivo(TP *tp, FILE *archivo)
 			return;
 		}
 		if (feof(archivo)) {
-			// Handle end-of-file condition
-			break;
+			return;
 		}
 		if (ferror(archivo)) {
-			// Handle read error
 			perror("Error reading file");
 			abb_destruir(tp->pokemones);
 			fclose(archivo);
@@ -277,8 +275,6 @@ TP *tp_crear(const char *nombre_archivo)
 		pista_vacia(tp, i);
 	}
 	leer_archivo(tp, archivo);
-
-	
 
 	return tp;
 }
@@ -550,7 +546,8 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 
 char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 {
-	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2) ||
+	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista)) {
 		return NULL;
 	}
 
@@ -565,7 +562,7 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 	struct pokemon_info *pokemon =
 		tp->jugadores.pokemon_seleccionado[jugador];
 
-	if (pokemon == NULL || lista_vacia(pista_jugador->pista)) {
+	if (pokemon == NULL) {
 		free(csv);
 		return NULL;
 	}

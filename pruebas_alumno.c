@@ -464,6 +464,8 @@ void pruebas_control_chanu()
 		cant_obstaculos_actual_jugador(tp, JUGADOR_2) == 0,
 		"No hay obstáculos inicialmente en la pista del Jugador 2.");
 
+	pa2m_afirmar(tp_tiempo_por_obstaculo(tp, JUGADOR_1) == NULL, "No se puede calcular el tiempo por obstáculo si no hay pista disponible.");
+
 	tp_destruir(tp);
 }
 
