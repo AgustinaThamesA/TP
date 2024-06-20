@@ -19,6 +19,15 @@ char *strdup2(const char *s)
 	return s2;
 }
 
+bool guardar_alfabeticamente(void *elemento, void *aux)
+{
+	struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
+	abb_t *auxiliar = aux;
+
+	abb_insertar(auxiliar, pokemon);
+	return true;
+}
+
 void leer_archivo(TP *tp, FILE *archivo)
 {
 	if (tp == NULL || archivo == NULL)
@@ -59,10 +68,11 @@ void leer_archivo(TP *tp, FILE *archivo)
 			fprintf(stderr, "Error: Formato de línea incorrecto\n");
 			fclose(archivo);
 			free(tp);
+			return;
 		}
 		if (feof(archivo)) {
 			// Handle end-of-file condition
-			return;
+			break;
 		}
 		if (ferror(archivo)) {
 			// Handle read error
@@ -73,6 +83,20 @@ void leer_archivo(TP *tp, FILE *archivo)
 			return;
 		}
 	}
+
+	abb_t *temporal = abb_crear(comparar_pokemon);
+	if (temporal == NULL) {
+		abb_destruir(tp->pokemones);
+		fclose(archivo);
+		free(tp);
+		return;
+	}
+
+	abb_con_cada_elemento(tp->pokemones, INORDEN, guardar_alfabeticamente,
+			      temporal);
+
+	abb_destruir(tp->pokemones); // Liberamos el árbol original
+	tp->pokemones = temporal; // Asignamos el árbol ordenado alfabéticamente
 }
 
 bool concatenar_nombres(void *elemento, void *aux)
@@ -277,7 +301,7 @@ char *tp_nombres_disponibles(TP *tp)
 
 	char *string = NULL;
 
-	if (!abb_con_cada_elemento(tp->pokemones, INORDEN, concatenar_nombres,
+	if (!abb_con_cada_elemento(tp->pokemones, PREORDEN, concatenar_nombres,
 				   &string)) {
 		free(string);
 		return NULL;
@@ -471,43 +495,44 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (tp == NULL || tp->jugadores.pokemon_seleccionado[jugador] == NULL ||
-	    tp->jugadores.pista_jugador[jugador]->cant_obstaculos == 0 ||
-	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) == true) {
+	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista)) {
 		return 0;
 	}
 
 	unsigned tiempo_total = 0;
-	int obstaculos_seguidos[3] = {
-		0, 0, 0
-	}; // orden de obstáculos: {fuerza, destreza, inteligencia}
 	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
 	struct pokemon_info *pokemon =
 		tp->jugadores.pokemon_seleccionado[jugador];
+
+	int obstaculos_seguidos[3] = { 0, 0,
+				       0 }; // fuerza, destreza, inteligencia
 
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		char *obstaculo =
 			lista_elemento_en_posicion(pista_jugador->pista, i);
 		int tiempo_obstaculo = 0;
+
 		if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->fuerza -
 					       obstaculos_seguidos[0]);
 			obstaculos_seguidos[0]++;
-			obstaculos_seguidos[1] = obstaculos_seguidos[2] = 0;
+			obstaculos_seguidos[1] = 0;
+			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_DESTREZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->destreza -
 					       obstaculos_seguidos[1]);
 			obstaculos_seguidos[1]++;
-			obstaculos_seguidos[0] = obstaculos_seguidos[2] = 0;
+			obstaculos_seguidos[0] = 0;
+			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->inteligencia -
 					       obstaculos_seguidos[2]);
 			obstaculos_seguidos[2]++;
-			obstaculos_seguidos[0] = obstaculos_seguidos[1] = 0;
+			obstaculos_seguidos[0] = 0;
+			obstaculos_seguidos[1] = 0;
 		}
 
-		tiempo_total += (unsigned)tiempo_obstaculo > 0 ?
-					(unsigned)tiempo_obstaculo :
-					0;
+		tiempo_total += (unsigned)tiempo_obstaculo;
 	}
 
 	return tiempo_total;
@@ -520,7 +545,7 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 	}
 
 	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
-	char *csv = malloc((pista_jugador->largo_pista * 12 + 1) *
+	char *csv = malloc((pista_jugador->cant_obstaculos * 3 + 1) *
 			   sizeof(char)); // Aumentar el tamaño del buffer
 	if (!csv) {
 		return NULL;
@@ -535,38 +560,28 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 		return NULL;
 	}
 
-	int obstaculos_seguidos[3] = {
-		0, 0, 0
-	}; // orden de obstáculos: {fuerza, destreza, inteligencia}
-
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		char *obstaculo =
 			lista_elemento_en_posicion(pista_jugador->pista, i);
 		int tiempo_obstaculo = 0;
+
 		if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
-			tiempo_obstaculo = abs(10 - pokemon->fuerza -
-					       obstaculos_seguidos[0]);
-			obstaculos_seguidos[0]++;
-			obstaculos_seguidos[1] = obstaculos_seguidos[2] = 0;
+			tiempo_obstaculo = abs(10 - pokemon->fuerza);
 		} else if (strcmp(obstaculo, PISTA_DESTREZA) == 0) {
-			tiempo_obstaculo = abs(10 - pokemon->destreza -
-					       obstaculos_seguidos[1]);
-			obstaculos_seguidos[1]++;
-			obstaculos_seguidos[0] = obstaculos_seguidos[2] = 0;
+			tiempo_obstaculo = abs(10 - pokemon->destreza);
 		} else if (strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
-			tiempo_obstaculo = abs(10 - pokemon->inteligencia -
-					       obstaculos_seguidos[2]);
-			obstaculos_seguidos[2]++;
-			obstaculos_seguidos[0] = obstaculos_seguidos[1] = 0;
+			tiempo_obstaculo = abs(10 - pokemon->inteligencia);
 		}
 
-		char tiempo_str[12]; // Aumentar el tamaño del buffer temporal
-		sprintf(tiempo_str, "%d", tiempo_obstaculo);
-
-		if (i != 0) {
-			strcat(csv, ",");
+		if (tiempo_obstaculo > 0) {
+			if (strlen(csv) > 0) {
+				strcat(csv, ",");
+			}
+			char tiempo_str
+				[12]; // Aumentar el tamaño del buffer temporal
+			sprintf(tiempo_str, "%d", tiempo_obstaculo);
+			strcat(csv, tiempo_str);
 		}
-		strcat(csv, tiempo_str);
 	}
 
 	return csv;
