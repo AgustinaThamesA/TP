@@ -491,6 +491,9 @@ void pruebas_control_chanu()
 	pa2m_afirmar(
 		tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 3,
 		"Puedo quitar un obstaculo de la pista del jugador 1 en la posicion 0 (IFI).");
+	char *obstaculos3 = tp_obstaculos_pista(tp, JUGADOR_1);
+	printf("Obstáculos: %s\n", obstaculos3);
+
 	pa2m_afirmar(
 		tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 2,
 		"Puedo quitar un obstaculo de la pista del jugador 1 en la posicion 1 (II).");
@@ -502,8 +505,8 @@ void pruebas_control_chanu()
 		"Los obstaculos en la pista del jugador 1 son los correctos (II).");
 
 	free(obstaculos);
-
 	free(obstaculos2);
+	free(obstaculos3);
 
 	tp_destruir(tp);
 }

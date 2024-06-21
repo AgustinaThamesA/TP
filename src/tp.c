@@ -401,6 +401,10 @@ unsigned tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador,
 		posicion = pista_jugador->largo_pista - 2;
 	}
 
+	if (strcmp(lista_elemento_en_posicion(pista_jugador->pista, posicion),
+		   PISTA_VACIA) == 0)
+		lista_quitar_de_posicion(pista_jugador->pista, posicion);
+
 	switch (obstaculo) {
 	case OBSTACULO_FUERZA:
 		lista_insertar_en_posicion(pista_jugador->pista, PISTA_FUERZA,
@@ -433,37 +437,30 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
 		return 0;
 	}
 
-	printf("Jugador: %d, Posición: %u\n", jugador, posicion);
 	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
+
+	printf("Posición para eliminar: %d\n", posicion);
 
 	if (posicion >= pista_jugador->largo_pista) {
 		posicion = pista_jugador->largo_pista - 1;
 	}
 
-	printf("Largo de la pista: %u, Posición ajustada: %u\n",
-	       pista_jugador->largo_pista, posicion);
 	char *obstaculo =
 		lista_elemento_en_posicion(pista_jugador->pista, posicion);
-	printf("Obstáculo en la posición: %s\n",
-	       obstaculo ? obstaculo : "NULL");
+
+	printf("obstaculo en posición %d: %s\n", posicion, obstaculo);
 
 	if (obstaculo != NULL && (strcmp(obstaculo, PISTA_FUERZA) == 0 ||
 				  strcmp(obstaculo, PISTA_DESTREZA) == 0 ||
 				  strcmp(obstaculo, PISTA_INTELIGENCIA) == 0)) {
-		printf("Eliminando obstáculo en la posición: %u\n", posicion);
 		lista_quitar_de_posicion(pista_jugador->pista, posicion);
 		lista_insertar_en_posicion(pista_jugador->pista, PISTA_VACIA,
 					   posicion);
 		pista_jugador->cant_obstaculos--;
-		printf("Obstáculo eliminado\n");
-	} else {
-		printf("No se encontró obstáculo para eliminar\n");
 	}
 
 	tp->jugadores.pista_jugador[jugador] = pista_jugador;
 
-	printf("Cantidad de obstáculos después de eliminar: %u\n",
-	       tp->jugadores.pista_jugador[jugador]->cant_obstaculos);
 	return tp->jugadores.pista_jugador[jugador]->cant_obstaculos;
 }
 
@@ -519,35 +516,25 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 
 	int obstaculos_seguidos[3] = { 0, 0,
 				       0 }; // fuerza, destreza, inteligencia
-
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		char *obstaculo =
 			lista_elemento_en_posicion(pista_jugador->pista, i);
 		int tiempo_obstaculo = 0;
-
 		if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->fuerza -
-					       obstaculos_seguidos[0]);
+					       (obstaculos_seguidos[0]));
 			obstaculos_seguidos[0]++;
-			obstaculos_seguidos[1] = 0;
-			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_DESTREZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->destreza -
-					       obstaculos_seguidos[1]);
+					       (obstaculos_seguidos[1]));
 			obstaculos_seguidos[1]++;
-			obstaculos_seguidos[0] = 0;
-			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->inteligencia -
-					       obstaculos_seguidos[2]);
+					       (obstaculos_seguidos[2]));
 			obstaculos_seguidos[2]++;
-			obstaculos_seguidos[0] = 0;
-			obstaculos_seguidos[1] = 0;
 		}
-
 		tiempo_total += (unsigned)tiempo_obstaculo;
 	}
-
 	return tiempo_total;
 }
 
@@ -576,40 +563,30 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 
 	int obstaculos_seguidos[3] = { 0, 0,
 				       0 }; // fuerza, destreza, inteligencia
-
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		char *obstaculo =
 			lista_elemento_en_posicion(pista_jugador->pista, i);
 		int tiempo_obstaculo = 0;
-
 		if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->fuerza -
-					       obstaculos_seguidos[0]);
+					       (obstaculos_seguidos[0]));
 			obstaculos_seguidos[0]++;
-			obstaculos_seguidos[1] = 0;
-			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_DESTREZA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->destreza -
-					       obstaculos_seguidos[1]);
+					       (obstaculos_seguidos[1]));
 			obstaculos_seguidos[1]++;
-			obstaculos_seguidos[0] = 0;
-			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
 			tiempo_obstaculo = abs(10 - pokemon->inteligencia -
-					       obstaculos_seguidos[2]);
+					       (obstaculos_seguidos[2]));
 			obstaculos_seguidos[2]++;
-			obstaculos_seguidos[0] = 0;
-			obstaculos_seguidos[1] = 0;
-		}
-
-		if (strlen(csv) > 0) {
-			strcat(csv, ",");
 		}
 		char tiempo_str[12];
 		sprintf(tiempo_str, "%d", tiempo_obstaculo);
+		if (strlen(csv) > 0) {
+			strcat(csv, ",");
+		}
 		strcat(csv, tiempo_str);
 	}
-
 	return csv;
 }
 
