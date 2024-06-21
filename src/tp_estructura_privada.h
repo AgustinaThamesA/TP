@@ -50,7 +50,7 @@ int comparar_pokemon(void *poke1, void *poke2);
 
 char *strdup2(const char *s);
 
-void leer_archivo(TP *tp, FILE *archivo);
+bool leer_archivo(TP *tp, FILE *archivo);
 
 bool concatenar_nombres(void *elemento, void *aux);
 

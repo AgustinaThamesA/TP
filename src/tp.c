@@ -30,16 +30,16 @@ bool guardar_alfabeticamente(void *elemento, void *aux)
 	return true;
 }
 
-void leer_archivo(TP *tp, FILE *archivo)
+bool leer_archivo(TP *tp, FILE *archivo)
 {
 	if (tp == NULL || archivo == NULL)
-		return;
+		return false;
 
 	tp->pokemones = abb_crear(comparar_pokemon);
 	if (tp->pokemones == NULL) {
 		fclose(archivo);
 		free(tp);
-		return;
+		return false;
 	}
 
 	char poke[256];
@@ -50,7 +50,7 @@ void leer_archivo(TP *tp, FILE *archivo)
 			abb_destruir(tp->pokemones);
 			fclose(archivo);
 			free(tp);
-			return;
+			return false;
 		}
 
 		char *nombre = strtok(poke, ",");
@@ -70,8 +70,9 @@ void leer_archivo(TP *tp, FILE *archivo)
 			fprintf(stderr, "Error: Formato de línea incorrecto\n");
 			free(pokemon);
 			fclose(archivo);
-			tp_destruir(tp);
-			return;
+			abb_destruir(tp->pokemones);
+			free(tp);
+			return false;
 		}
 		if (feof(archivo)) {
 			break;
@@ -82,7 +83,7 @@ void leer_archivo(TP *tp, FILE *archivo)
 			abb_destruir(tp->pokemones);
 			fclose(archivo);
 			free(tp);
-			return;
+			return false;
 		}
 	}
 
@@ -91,7 +92,7 @@ void leer_archivo(TP *tp, FILE *archivo)
 		abb_destruir(tp->pokemones);
 		fclose(archivo);
 		free(tp);
-		return;
+		return false;
 	}
 
 	abb_con_cada_elemento(tp->pokemones, INORDEN, guardar_alfabeticamente,
@@ -101,6 +102,7 @@ void leer_archivo(TP *tp, FILE *archivo)
 	tp->pokemones = temporal;
 
 	fclose(archivo);
+	return true;
 }
 
 bool concatenar_nombres(void *elemento, void *aux)
@@ -258,6 +260,10 @@ TP *tp_crear(const char *nombre_archivo)
 		return NULL;
 	}
 
+	if (!leer_archivo(tp, archivo)) {
+		return NULL;
+	}
+
 	for (int i = 0; i < 2; i++) {
 		tp->jugadores.pista_jugador[i] =
 			malloc(sizeof(pista_jugador_t));
@@ -280,7 +286,6 @@ TP *tp_crear(const char *nombre_archivo)
 
 		pista_vacia(tp, i);
 	}
-	leer_archivo(tp, archivo);
 
 	return tp;
 }
@@ -604,17 +609,24 @@ void tp_destruir(TP *tp)
 	if (tp == NULL)
 		return;
 
-	abb_con_cada_elemento(tp->pokemones, INORDEN, destruir_strdup2, NULL);
-	abb_destruir(tp->pokemones);
+	if (abb_vacio(tp->pokemones) == false) {
+		abb_con_cada_elemento(tp->pokemones, INORDEN, destruir_strdup2,
+				      NULL);
+		abb_destruir(tp->pokemones);
+	}
 
 	for (int i = 0; i < 2; i++) {
-		if (tp->jugadores.pokemon_seleccionado[i] != NULL) {
-			free(tp->jugadores.pokemon_seleccionado[i]->nombre);
-			free(tp->jugadores.pokemon_seleccionado[i]);
+		if (tp->jugadores.pista_jugador[i] != NULL) {
+			if (tp->jugadores.pokemon_seleccionado[i] != NULL) {
+				free(tp->jugadores.pokemon_seleccionado[i]
+					     ->nombre);
+				free(tp->jugadores.pokemon_seleccionado[i]);
+			}
+			if (tp->jugadores.pista_jugador[i]->pista != NULL)
+				lista_destruir(
+					tp->jugadores.pista_jugador[i]->pista);
+			free(tp->jugadores.pista_jugador[i]);
 		}
-		lista_destruir(tp->jugadores.pista_jugador[i]->pista);
-
-		free(tp->jugadores.pista_jugador[i]);
 	}
 
 	free(tp);
