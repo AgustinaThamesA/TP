@@ -491,8 +491,6 @@ void pruebas_control_chanu()
 	pa2m_afirmar(
 		tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 3,
 		"Puedo quitar un obstaculo de la pista del jugador 1 en la posicion 0 (IFI).");
-	char *obstaculos3 = tp_obstaculos_pista(tp, JUGADOR_1);
-	printf("Obstáculos: %s\n", obstaculos3);
 
 	pa2m_afirmar(
 		tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 2,
@@ -506,7 +504,6 @@ void pruebas_control_chanu()
 
 	free(obstaculos);
 	free(obstaculos2);
-	free(obstaculos3);
 
 	tp_destruir(tp);
 }
@@ -518,6 +515,7 @@ void pruebas_tiempo_chanu()
 	printf("Otra pista\n\n");
 
 	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 8;
+	tp->jugadores.pista_jugador[JUGADOR_2]->largo_pista = 8;
 	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 8;
 
 	const char *nombre1 = "Caterpie";
