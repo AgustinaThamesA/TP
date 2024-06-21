@@ -475,7 +475,8 @@ unsigned tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)
 
 char *tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador)
 {
-	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2)) {
+	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2) ||
+	    cant_obstaculos_actual_jugador(tp, jugador) == 0) {
 		return NULL;
 	}
 
@@ -563,8 +564,7 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 	}
 
 	pista_jugador_t *pista_jugador = tp->jugadores.pista_jugador[jugador];
-	char *csv =
-		malloc((pista_jugador->cant_obstaculos * 3 + 1) * sizeof(char));
+	char *csv = malloc((pista_jugador->largo_pista * 4) * sizeof(char));
 	if (!csv) {
 		return NULL;
 	}
@@ -578,27 +578,40 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 		return NULL;
 	}
 
+	int obstaculos_seguidos[3] = { 0, 0,
+				       0 }; // fuerza, destreza, inteligencia
+
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		char *obstaculo =
 			lista_elemento_en_posicion(pista_jugador->pista, i);
 		int tiempo_obstaculo = 0;
 
 		if (strcmp(obstaculo, PISTA_FUERZA) == 0) {
-			tiempo_obstaculo = abs(10 - pokemon->fuerza);
+			tiempo_obstaculo = abs(10 - pokemon->fuerza -
+					       obstaculos_seguidos[0]);
+			obstaculos_seguidos[0]++;
+			obstaculos_seguidos[1] = 0;
+			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_DESTREZA) == 0) {
-			tiempo_obstaculo = abs(10 - pokemon->destreza);
+			tiempo_obstaculo = abs(10 - pokemon->destreza -
+					       obstaculos_seguidos[1]);
+			obstaculos_seguidos[1]++;
+			obstaculos_seguidos[0] = 0;
+			obstaculos_seguidos[2] = 0;
 		} else if (strcmp(obstaculo, PISTA_INTELIGENCIA) == 0) {
-			tiempo_obstaculo = abs(10 - pokemon->inteligencia);
+			tiempo_obstaculo = abs(10 - pokemon->inteligencia -
+					       obstaculos_seguidos[2]);
+			obstaculos_seguidos[2]++;
+			obstaculos_seguidos[0] = 0;
+			obstaculos_seguidos[1] = 0;
 		}
 
-		if (tiempo_obstaculo > 0) {
-			if (strlen(csv) > 0) {
-				strcat(csv, ",");
-			}
-			char tiempo_str[12];
-			sprintf(tiempo_str, "%d", tiempo_obstaculo);
-			strcat(csv, tiempo_str);
+		if (strlen(csv) > 0) {
+			strcat(csv, ",");
 		}
+		char tiempo_str[12];
+		sprintf(tiempo_str, "%d", tiempo_obstaculo);
+		strcat(csv, tiempo_str);
 	}
 
 	return csv;
