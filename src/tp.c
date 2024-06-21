@@ -25,7 +25,6 @@ bool guardar_alfabeticamente(void *elemento, void *aux)
 		return false;
 	struct pokemon_info *pokemon = (struct pokemon_info *)elemento;
 	abb_t *auxiliar = aux;
-	//printf("%s\n", pokemon->nombre);
 	abb_insertar(auxiliar, pokemon);
 	return true;
 }
@@ -67,7 +66,6 @@ bool leer_archivo(TP *tp, FILE *archivo)
 
 			abb_insertar(tp->pokemones, pokemon);
 		} else {
-			fprintf(stderr, "Error: Formato de línea incorrecto\n");
 			free(pokemon);
 			fclose(archivo);
 			abb_destruir(tp->pokemones);
@@ -78,7 +76,6 @@ bool leer_archivo(TP *tp, FILE *archivo)
 			break;
 		}
 		if (ferror(archivo)) {
-			perror("Error reading file");
 			free(pokemon);
 			abb_destruir(tp->pokemones);
 			fclose(archivo);
@@ -140,15 +137,12 @@ void pista_vacia(TP *tp, enum TP_JUGADOR jugador)
 	for (size_t i = 0; i < pista_jugador->largo_pista; i++) {
 		lista_insertar_en_posicion(pista_jugador->pista, PISTA_VACIA,
 					   i);
-		//printf("Posición %ld vacía\n", i);
 	}
 
 	tp->jugadores.pista_jugador[jugador] = pista_jugador;
 	if (lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) == true)
 		printf("Pista vacía no inicializada correctamente.\n");
 	tp->jugadores.pista_jugador[jugador]->cant_obstaculos = 0;
-	printf("Pista con obstáculos en: %d.\n",
-	       tp->jugadores.pista_jugador[jugador]->cant_obstaculos);
 }
 
 unsigned aleatoria(int maximo, int minimo)
@@ -513,7 +507,8 @@ void tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)
 unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (tp == NULL || tp->jugadores.pokemon_seleccionado[jugador] == NULL ||
-	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista)) {
+	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) ||
+	    tp->jugadores.pista_jugador[jugador]->cant_obstaculos == 0) {
 		return 0;
 	}
 
@@ -559,7 +554,8 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 {
 	if (tp == NULL || (jugador != JUGADOR_1 && jugador != JUGADOR_2) ||
-	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista)) {
+	    lista_vacia(tp->jugadores.pista_jugador[jugador]->pista) ||
+	    tp->jugadores.pista_jugador[jugador]->cant_obstaculos == 0) {
 		return NULL;
 	}
 

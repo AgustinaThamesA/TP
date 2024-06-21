@@ -446,14 +446,10 @@ void pruebas_control_chanu()
 	pa2m_afirmar(tp1 == NULL,
 		     "No puedo crear un TP con un archivo inexistente.");
 
-	//free(tp1);
-
 	TP *tp2 = tp_crear("ejemplo/pruebas.txt");
 
 	pa2m_afirmar(tp2 == NULL,
 		     "No puedo crear un TP con un archivo incorrecto.");
-
-	//free(tp2);
 
 	TP *tp = tp_crear("ejemplo/pokemones.txt");
 
@@ -472,6 +468,126 @@ void pruebas_control_chanu()
 	pa2m_afirmar(
 		tp_tiempo_por_obstaculo(tp, JUGADOR_1) == NULL,
 		"No se puede calcular el tiempo por obstáculo si no hay pista disponible.");
+
+	pa2m_afirmar(
+		tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 0) == 1,
+		"Puedo agregar un obstaculo de fuerza al jugador 1 en la posicion 0 (F).");
+	pa2m_afirmar(
+		tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 0) == 2,
+		"Puedo agregar un obstaculo de destreza al jugador 1 en la posicion 0 (DF).");
+	pa2m_afirmar(
+		tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+				     1) == 3,
+		"Puedo agregar un obstaculo de inteligencia al jugador 1 en la posicion 1 (DIF).");
+	pa2m_afirmar(
+		tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA,
+				     3) == 4,
+		"Puedo agregar un obstaculo de inteligencia al jugador 1 en la posicion 3 (DIFI).");
+
+	char *obstaculos = tp_obstaculos_pista(tp, JUGADOR_1);
+	pa2m_afirmar(
+		strcmp(obstaculos, "DIFI") == 0,
+		"Los obstaculos en la pista del jugador 1 son los correctos (DIFI).");
+	pa2m_afirmar(
+		tp_quitar_obstaculo(tp, JUGADOR_1, 0) == 3,
+		"Puedo quitar un obstaculo de la pista del jugador 1 en la posicion 0 (IFI).");
+	pa2m_afirmar(
+		tp_quitar_obstaculo(tp, JUGADOR_1, 1) == 2,
+		"Puedo quitar un obstaculo de la pista del jugador 1 en la posicion 1 (II).");
+
+	char *obstaculos2 = tp_obstaculos_pista(tp, JUGADOR_1);
+	printf("\nObstáculos en la pista del Jugador 2: %s\n", obstaculos2);
+	pa2m_afirmar(
+		strcmp(obstaculos2, "II") == 0,
+		"Los obstaculos en la pista del jugador 1 son los correctos (II).");
+
+	free(obstaculos);
+
+	free(obstaculos2);
+
+	tp_destruir(tp);
+}
+
+void pruebas_tiempo_chanu()
+{
+	TP *tp = tp_crear("ejemplo/pokemones.txt");
+
+	printf("Otra pista\n\n");
+
+	tp->jugadores.pista_jugador[JUGADOR_1]->largo_pista = 8;
+	tp->jugadores.pista_jugador[JUGADOR_1]->max_obstaculos = 8;
+
+	const char *nombre1 = "Caterpie";
+	const struct pokemon_info *poke1 = tp_buscar_pokemon(tp, nombre1);
+	tp_seleccionar_pokemon(tp, JUGADOR_1, "Caterpie");
+	pa2m_afirmar(strcmp(poke1->nombre, "Caterpie") == 0,
+		     "El pokemon seleccionado por el Jugador 1 es Caterpie.");
+
+	const char *nombre2 = "Dragonite";
+	const struct pokemon_info *poke2 = tp_buscar_pokemon(tp, nombre2);
+	tp_seleccionar_pokemon(tp, JUGADOR_2, "Dragonite");
+	pa2m_afirmar(strcmp(poke2->nombre, "Dragonite") == 0,
+		     "El pokemon seleccionado por el Jugador 2 es Dragonite.");
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA, 0);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_INTELIGENCIA, 0);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_FUERZA, 1);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_FUERZA, 1);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 2);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_DESTREZA, 2);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 3);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_DESTREZA, 3);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 4);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_DESTREZA, 4);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_DESTREZA, 5);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_DESTREZA, 5);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA, 6);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_INTELIGENCIA, 6);
+
+	tp_agregar_obstaculo(tp, JUGADOR_1, OBSTACULO_INTELIGENCIA, 7);
+	tp_agregar_obstaculo(tp, JUGADOR_2, OBSTACULO_INTELIGENCIA, 7);
+
+	char *obstaculos1 = tp_obstaculos_pista(tp, JUGADOR_1);
+	printf("\nObstáculos en la pista del Jugador 1: %s\n", obstaculos1);
+	pa2m_afirmar(
+		strcmp(obstaculos1, "IFDDDDII") == 0,
+		"Los obstaculos en la pista del jugador 1 son los correctos (IFDDDDII).");
+	free(obstaculos1);
+
+	char *obstaculos2 = tp_obstaculos_pista(tp, JUGADOR_2);
+	printf("\nObstáculos en la pista del Jugador 2: %s\n", obstaculos2);
+	pa2m_afirmar(
+		strcmp(obstaculos2, "IFDDDDII") == 0,
+		"Los obstaculos en la pista del jugador 2 son los correctos (IFDDDDII).");
+	free(obstaculos2);
+
+	char *tiempo_1 = tp_tiempo_por_obstaculo(tp, JUGADOR_1);
+	printf("\nTiempo de la pista del Jugador 1: %s\n", tiempo_1);
+	pa2m_afirmar(
+		strcmp(tiempo_1, "9,7,2,1,0,0,9,8") == 0,
+		"Los tiempos de obstaculos para caterpie son los correctos (9,7,2,1,0,0,9,8).");
+	free(tiempo_1);
+	unsigned tiempo_pista_1 = tp_calcular_tiempo_pista(tp, JUGADOR_1);
+	printf("Tiempo pista 1: %d\n", tiempo_pista_1);
+	pa2m_afirmar(tiempo_pista_1 == 36,
+		     "El tiempo de caterpie es el correcto (36).");
+
+	char *tiempo_2 = tp_tiempo_por_obstaculo(tp, JUGADOR_2);
+	printf("\nTiempo de la pista del Jugador 2: %s\n", tiempo_2);
+	pa2m_afirmar(
+		strcmp(tiempo_2, "2,1,0,0,0,0,2,1") == 0,
+		"Los tiempos de obstaculos para dragonite son los correctos (2,1,0,0,0,0,2,1).");
+	free(tiempo_2);
+	unsigned tiempo_pista_2 = tp_calcular_tiempo_pista(tp, JUGADOR_2);
+	printf("Tiempo pista 2: %d\n", tiempo_pista_2);
+	pa2m_afirmar(tiempo_pista_2 == 6,
+		     "El tiempo de dragonite es el correcto (6).");
 
 	tp_destruir(tp);
 }
@@ -521,6 +637,8 @@ int main()
 	pa2m_nuevo_grupo(
 		"\n======================== Pruebas de chanu ========================");
 	pruebas_control_chanu();
+	printf("\n");
+	pruebas_tiempo_chanu();
 
 	return pa2m_mostrar_reporte();
 }
