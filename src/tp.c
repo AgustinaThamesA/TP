@@ -552,6 +552,7 @@ unsigned tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)
 		}
 		tiempo_total += (unsigned)tiempo_obstaculo;
 	}
+	printf("Tiempo total: %d\n", tiempo_total);
 	return tiempo_total;
 }
 
@@ -626,6 +627,7 @@ char *tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)
 		}
 		strcat(csv, tiempo_str);
 	}
+	printf("Tiempo por obstabulo: %s", csv);
 	return csv;
 }
 
