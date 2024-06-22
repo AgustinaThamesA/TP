@@ -15,7 +15,7 @@ void establecer_dificultad(TP *tp, int dificultad);
 // Le pide al usuario que seleccione la dificultad del juego
 void seleccionar_dificultad(TP *tp);
 
-// Función que le muestra al usuario los nombres de los 
+// Función que le muestra al usuario los nombres de los
 // pokemones disponibles
 void mostrar_pokemones_disponibles(TP *tp);
 
@@ -39,7 +39,7 @@ void agregar_obstaculos_a_pista_compu(TP *tp);
 // posición de obstáculos
 void usuario_elije_pista(TP *tp);
 
-// Función que llama a las dos funciones anteriores para 
+// Función que llama a las dos funciones anteriores para
 // preparar las pistas para la carrera
 void preparar_carrera(TP *tp);
 

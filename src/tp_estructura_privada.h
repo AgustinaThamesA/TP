@@ -79,7 +79,7 @@ void imprimir_pista(TP *tp);
 // Función que concatena los obstáculos en un string
 bool concatenar_obstaculos(void *elemento, void *aux);
 
-// Función que libera la memoria de un struct pokemon_info y 
+// Función que libera la memoria de un struct pokemon_info y
 // el campo que corresponde al nombre del pokemon
 bool destruir_strdup2(void *elemento, void *aux);
 
