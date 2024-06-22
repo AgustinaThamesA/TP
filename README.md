@@ -109,10 +109,102 @@ Si bien no se muestra el progeso de los pokemones en sus respectivas pistas, se 
 
 Se tomó la decisión de hacer estructuras dentro del TDA TP, ya que la mayoría de los campos se relacionan con otros. Se tuvo en cuenta el orden de utilización de la información guardada en cada estructura. 
 
-Tal como se ve en mi implementación, no existe tal TDA menú, ya que toda la información que necesitaba cada jugador fue guardada en el TDA Tp, tal como se explicó en el párrafo anterior.
+Tal como se ve en mi implementación, no existe tal TDA menú, ya que toda la información que necesitaba cada jugador fue guardada en el TDA TP, tal como se explicó en el párrafo anterior.
 
 ---
 
 ## Respuestas a las preguntas teóricas
--   Explique la estructura interna del tda **TP**. Explique por qué utilizó esa estructura.
--   Justifique la complejidad de las operaciones implementadas.
+### Estructura interna del TDA `TP`
+
+```c
+typedef struct pista_jugador {
+    lista_t *pista;
+    unsigned cant_obstaculos;
+    unsigned largo_pista;
+    unsigned max_obstaculos;
+    int dificultad;
+    double velocidad;
+} pista_jugador_t;
+
+typedef struct jugadores {
+    struct pokemon_info *pokemon_seleccionado[2];
+    pista_jugador_t *pista_jugador[2];
+} jugadores_t;
+
+struct tp {
+    abb_t *pokemones;
+    jugadores_t jugadores;
+};
+```
+
+#### Explicación:
+
+1. **`pista_jugador_t`**:
+   - Esta estructura representa la información relacionada con la pista de juego para un jugador.
+   - `pista`: Es un puntero a una lista (`lista_t`) que contiene los elementos de la pista (espacios vacíos y obstáculos).
+   - `cant_obstaculos`: Número de obstáculos presentes actualmente en la pista.
+   - `largo_pista`: Longitud total de la pista.
+   - `max_obstaculos`: Máximo número de obstáculos permitidos en la pista.
+   - `dificultad`: Nivel de dificultad de la pista.
+   - `velocidad`: Velocidad del jugador o del avance en la pista.
+
+2. **`jugadores_t`**:
+   - Esta estructura contiene la información relacionada con los jugadores de la carrera de obstáculos. El Jugador 1 es el usuario, y el Jugador 2 es la computadora.
+   - `pokemon_seleccionado`: Un array de tamaño 2 que almacena punteros a `pokemon_info`, que representan los pokemones seleccionados para cada jugador.
+   - `pista_jugador`: Un array de tamaño 2 que contiene punteros a `pista_jugador_t`, que representan las pistas individuales de cada jugador.
+
+3. **`struct tp`**:
+   - Esta es la estructura principal que encapsula todo el TDA `TP`.
+   - `pokemones`: Es un puntero a un árbol binario de búsqueda (`abb_t`) que almacena los pokemones disponibles en el juego.
+   - `jugadores`: Es un campo que contiene la estructura `jugadores_t`, que a su vez almacena la información específica de los jugadores.
+
+#### Razones por las cuales diseñé esta estructura:
+
+- La estructura `tp` organiza y encapsula todos los datos relacionados con el juego. Agrupa los pokemones en un árbol binario de búsqueda (`pokemones`) para facilitar la búsqueda eficiente por nombre y manejar la colección de pokemon de manera ordenada y estructurada.
+
+- La estructura `jugadores_t` separa la información de cada jugador (`pokemon_seleccionado` y `pista_jugador`) en una entidad específica, lo que facilita la gestión de cada jugador por separado y evita la complejidad de mezclar los datos de ambos jugadores en una sola estructura.
+
+- Esta estructura permite fácilmente agregar nuevas funcionalidades o datos relacionados con el juego. Por ejemplo, podrías extender `pista_jugador_t` para incluir más detalles sobre la pista o mejorar `jugadores_t` para manejar más jugadores si el juego así lo requiriera en el futuro.
+
+- Utilizar estructuras de datos tales como listas (`lista_t`) y árboles (`abb_t`) permite manejar eficientemente grandes cantidades de datos (por ejemplo, muchos pokemon o muchos obstáculos en una pista) con operaciones rápidas de búsqueda, inserción y eliminación.
+
+
+### Complejidad de las operaciones implementadas
+##### `tp_crear()`
+- Complejidad: O(n) -> donde n es el tamaño del archivo, debido a la operación strrchr y strcmp. La función `leer_archivo` tiene su propia complejidad dependiente de la implementación.
+
+##### `tp_cantidad_pokemon()`
+- Complejidad: O(log n) -> que corresponde a la complejidad de la operación `abb_tamanio()`
+
+##### `tp_buscar_pokemon()`
+- Complejidad: O(log n) -> que corresponde a la complejidad de la operación `abb_buscar()`
+
+##### `tp_nombres_disponibles()`
+- Complejidad: O(n), donde n es el número de elementos en el abb de pokemones, debido a la función `abb_con_cada_elemento`.
+
+##### `tp_seleccionar_pokemon()`
+- Complejidad: O(log n), donde n es el número de elementos en el abb de pokemones, debido a la llamada a la función `tp_buscar_pokemon`.
+
+##### `tp_pokemon_seleccionado()`
+- Complejidad: O(log n), donde n es el número de elementos en el abb de pokemones, debido a la llamada a la función `tp_buscar_pokemon`.
+
+##### `tp_agregar_obstaculo()`
+- Complejidad: depende de las operaciones de lista utilizadas, como `lista_elemento_en_posicion`, `lista_quitar_de_posicion`, y `lista_insertar_en_posicion`.
+
+##### `tp_quitar_obstaculo()`
+- Complejidad: depende de las operaciones de lista utilizadas, como `lista_elemento_en_posicion` y `lista_quitar_de_posicion`.
+
+##### `tp_obstaculos_pista()`
+- Complejidad: O(n), debido a la operación de lista utilizada `lista_elemento_en_posicion`.
+
+##### `tp_limpiar_pista()`
+- Complejidad: O(n), donde n es el número de elementos en la lista de la pista del jugador, debido a la operación de lista utilizada `lista_quitar`.
+
+##### `tp_calcular_tiempo_pista()`
+- Complejidad: O(n), donde n es el número de elementos en la lista de la pista del jugador, debido a la operación de lista utilizada `lista_elemento_en_posicion`.
+
+##### `tp_tiempo_por_obstaculo()`
+- Complejidad: O(n), donde n es el número de elementos en la lista de la pista del jugador, debido a la operación de lista utilizada `lista_elemento_en_posicion`.
+
+##### `tp_destruir()`
+- Complejidad: O(n + m), donde n es el número de elementos en el árbol binario de búsqueda tp->pokemones y m es el número de elementos en las listas de tp->jugadores.
