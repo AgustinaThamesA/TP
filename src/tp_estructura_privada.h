@@ -2,6 +2,7 @@
 #define __TP_ESTRUCTURA_PRIVADA_H__
 
 #include "tp.h"
+#include "tp_auxiliares.h"
 #include "abb.h"
 #include "abb_estructura_privada.h"
 #include "lista.h"
@@ -45,42 +46,41 @@ struct tp {
 
 // ------------- FUNCIONES AUXILIARES TP.C -------------
 
+// Comparador que se utiliza para crear el abb que contiene a los
+// pokemones
 int comparar_pokemon(void *poke1, void *poke2);
 
+// Función con implementación similar a strdup()
 char *strdup2(const char *s);
 
+// Guarda los pokemones ordenados alfabéticamente en un ABB auxiliar
+bool guardar_alfabeticamente(void *elemento, void *aux);
+
+// Función que lee un archivo con extensión .txt
+// e inserta la información obtenida en tp->pokemones
 bool leer_archivo(TP *tp, FILE *archivo);
 
+// Concatena los nombres de los pokemones en un string separado
+// por comas, para mostrar los nombres disponibles
 bool concatenar_nombres(void *elemento, void *aux);
 
+// Función que inicializa la pista de un jugador con espacios vacíos
 void pista_vacia(TP *tp, enum TP_JUGADOR jugador);
 
+// Función que devuelve un número aleatorio entre mínimo y máximo
 unsigned aleatoria(int maximo, int minimo);
 
+// Función que devuelve la cantidad de obstáculos del jugador
 unsigned cant_obstaculos_actual_jugador(TP *tp, enum TP_JUGADOR jugador);
 
+// Función que imprime por consola las pistas
 void imprimir_pista(TP *tp);
 
+// Función que concatena los obstáculos en un string
 bool concatenar_obstaculos(void *elemento, void *aux);
 
+// Función que libera la memoria de un struct pokemon_info y 
+// el campo que corresponde al nombre del pokemon
 bool destruir_strdup2(void *elemento, void *aux);
-
-// ------------- FUNCIONES AUXILIARES JUEGO.C -------------
-// DEBERÍA HACER UN JUEGO.H PARA PONER LAS FIRMAS DE LAS FUNCIONES
-// AUXILIARES AHÍ
-
-int calculo_puntaje(TP *tp);
-
-void establecer_dificultad(TP *tp, int dificultad);
-
-void seleccionar_dificultad(TP *tp);
-
-void mostrar_pokemones_disponibles(TP *tp);
-
-char *tp_obtener_nombre_pokemon(TP *tp, unsigned int index);
-
-void seleccionar_pokemon(TP *tp);
-
-void mostrar_menu_principal(int *opcion);
 
 #endif // __TP_ESTRUCTURA_PRIVADA_H__
