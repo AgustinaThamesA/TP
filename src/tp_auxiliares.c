@@ -123,9 +123,11 @@ void seleccionar_pokemon(TP *tp)
 	const struct pokemon_info *poke_computadora =
 		tp_pokemon_seleccionado(tp, JUGADOR_2);
 	printf("\n\n\nUsted estará compitiendo con el pokemon %s que tiene %d de fuerza, %d de destreza y %d de inteligencia.\n",
-	       poke_usuario->nombre, poke_usuario->fuerza, poke_usuario->destreza, poke_usuario->inteligencia);
+	       poke_usuario->nombre, poke_usuario->fuerza,
+	       poke_usuario->destreza, poke_usuario->inteligencia);
 	printf("\nEl pokemon al cual te estarás enfrentando será... %s\n Tu oponente tiene %d de fuerza, %d de destreza y %d de inteligencia.\n\n\n",
-	       poke_computadora->nombre, poke_computadora->fuerza, poke_computadora->destreza, poke_computadora->inteligencia);
+	       poke_computadora->nombre, poke_computadora->fuerza,
+	       poke_computadora->destreza, poke_computadora->inteligencia);
 }
 
 void mostrar_menu_principal(int *opcion)
