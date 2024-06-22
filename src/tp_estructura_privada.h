@@ -29,7 +29,6 @@ typedef struct pista_jugador {
 	unsigned cant_obstaculos;
 	unsigned largo_pista;
 	unsigned max_obstaculos;
-	lista_t *puntajes;
 	int dificultad;
 	double velocidad;
 } pista_jugador_t;
