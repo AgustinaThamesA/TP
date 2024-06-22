@@ -28,38 +28,27 @@ Lo que plantea mi juego es que el usuario pueda elegir su pokemón, que seleccio
 
 Luego, se muestran ambas pistas y comienza la carrera. Si bien los movimientos de los pokemones en las pistas no se muestran, se va mostrando la velocidad, el tiempo transcurrido y la distancia recorrida de cada pokemon. 
 
-Cuando se ejecuta juego.c, y el usuario tiene que interactuar a tarvés de la consola, se le va informando las cosas necesarias, y le va pidiendo que cargue valores según lo que corresponda.
+Cuando se ejecuta juego.c, y el usuario tiene que interactuar a través de la consola, se le va informando las cosas necesarias, y le va pidiendo que cargue valores según lo que corresponda. El comportamiento del usuario debe seguir el siguiente diagrama:
+
+<div align="center">
+<img width="70%" src="img/diagrama_juego_tp_final.drawio.svg">
+</div>
 
 ---
 
-Explicación de cómo funcionan las estructuras desarrolladas en el TP y el funcionamiento general del mismo.
+### Funcionamiento general de funciones de tp.c
 
-Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
 
-Incluír **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente diagramas de memoria para explicar las estructuras, pero se pueden utilizar otros diagramas si es necesario).
 
-### Por ejemplo:
 
-El programa funciona abriendo el archivo pasado como parámetro y leyendolo línea por línea. Por cada línea crea un registro e intenta agregarlo al vector. La función de lectura intenta leer todo el archivo o hasta encontrar el primer error. Devuelve un vector con todos los registros creados.
+
+A continuación, se muestra un diagrama que grafica el uso de memoria en mi implementación:
 
 <div align="center">
-<img width="70%" src="img/diagrama1.svg">
+<img width="70%" src="img/stack_heap_tp_final.drawio.svg">
 </div>
 
-En el archivo `sarasa.c` la función `funcion1` utiliza `realloc` para agrandar la zona de memoria utilizada para conquistar el mundo. El resultado de `realloc` lo guardo en una variable auxiliar para no perder el puntero original en caso de error:
 
-```c
-int *vector = realloc(vector_original, (n+1)*sizeof(int));
-
-if(vector == NULL)
-    return -1;
-vector_original = vector;
-```
-
-
-<div align="center">
-<img width="70%" src="img/diagrama2.svg">
-</div>
 
 ---
 
