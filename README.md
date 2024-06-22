@@ -37,10 +37,55 @@ Cuando se ejecuta juego.c, y el usuario tiene que interactuar a través de la co
 ---
 
 ### Funcionamiento general de funciones de tp.c
+#### `tp_crear(const char *nombre_archivo)`
 
+Esta función intenta crear una estructura `TP` (la estructura principal para el juego) a partir de un archivo cuyo nombre se pasa como parámetro.
 
+- Verifica que `nombre_archivo` no sea NULL.
+- Luego verifica que el archivo tenga la extensión ".txt".
+- Crea un objeto `TP` y lo inicializa.
+- Abre el archivo para lectura y llama a `leer_archivo` para procesar su contenido.
+- Para cada jugador (2 jugadores en total), inicializa una estructura `pista_jugador_t` y una lista de obstáculos (`pista`) utilizando las funciones ya implementadas del TDA Lista.
+- Inicializa algunos campos de la estructura `pista_jugador_t` y llama a `pista_vacia`.
+- Finalmente, devuelve el objeto `TP` creado.
 
+#### `tp_cantidad_pokemon(TP *tp)`
+Retorna la cantidad de pokemon almacenados en una estructura `TP`.
 
+#### `tp_buscar_pokemon(TP *tp, const char *nombre)`
+Busca un pokemon por nombre dentro de la estructura `TP`.
+
+#### `tp_nombres_disponibles(TP *tp)`
+Retorna una cadena con los nombres de todos los pokemon disponibles.
+
+#### `tp_seleccionar_pokemon(TP *tp, enum TP_JUGADOR jugador, const char *nombre)`
+Permite a un jugador seleccionar un pokemon.
+
+#### `tp_pokemon_seleccionado(TP *tp, enum TP_JUGADOR jugador)`
+Retorna el Pokemon seleccionado por un jugador.
+
+#### `tp_agregar_obstaculo(TP *tp, enum TP_JUGADOR jugador, enum TP_OBSTACULO obstaculo, unsigned posicion)`
+Agrega un obstáculo a la pista de un jugador.
+
+#### `tp_quitar_obstaculo(TP *tp, enum TP_JUGADOR jugador, unsigned posicion)`
+Quita un obstáculo de la pista de un jugador.
+
+#### `tp_obstaculos_pista(TP *tp, enum TP_JUGADOR jugador)`
+Retorna los obstáculos presentes en la pista de un jugador.
+
+#### `tp_limpiar_pista(TP *tp, enum TP_JUGADOR jugador)`
+Limpia la pista de un jugador.
+
+#### `tp_calcular_tiempo_pista(TP *tp, enum TP_JUGADOR jugador)`
+Calcula el tiempo total que tardará un jugador en completar la pista.
+
+#### `tp_tiempo_por_obstaculo(TP *tp, enum TP_JUGADOR jugador)`
+Retorna el tiempo que tomará superar cada obstáculo en la pista de un jugador.
+
+#### `tp_destruir(TP *tp)`
+Libera toda la memoria asignada para la estructura `TP` y sus elementos.
+
+--- 
 
 A continuación, se muestra un diagrama que grafica el uso de memoria en mi implementación:
 
@@ -48,7 +93,23 @@ A continuación, se muestra un diagrama que grafica el uso de memoria en mi impl
 <img width="70%" src="img/stack_heap_tp_final.drawio.svg">
 </div>
 
+---
 
+### Decisiones tomadas en el desarrollo del TP integrador
+
+- Se asume que existen definiciones para estructuras como `TP`, `pista_jugador_t`, así como funciones auxiliares como `leer_archivo`, `lista_crear`, `pista_vacia`, entre otras (como `abb_tamanio`, `abb_buscar`, etc.).
+- Cada función está diseñada para trabajar con la estructura `TP` y sus componentes (`jugadores`, `pokemones`, etc.) de manera coherente y segura, manejando adecuadamente los casos de error y liberando memoria cuando sea necesario.
+- Se utilizan TDAs implementados a los largo de la cursada, ya que las estructuras necesitaban de ciertos tipos de datos que favorecen la implementación según el manejo en las operaciones de cada TDA.
+
+---
+
+### Explicación extra del juego implementado
+
+Si bien no se muestra el progeso de los pokemones en sus respectivas pistas, se muestra información que le permite al usuario imaginarse el progreso de cada uno en el transcurso de la carrera.
+
+Se tomó la decisión de hacer estructuras dentro del TDA TP, ya que la mayoría de los campos se relacionan con otros. Se tuvo en cuenta el orden de utilización de la información guardada en cada estructura. 
+
+Tal como se ve en mi implementación, no existe tal TDA menú, ya que toda la información que necesitaba cada jugador fue guardada en el TDA Tp, tal como se explicó en el párrafo anterior.
 
 ---
 
