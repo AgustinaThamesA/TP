@@ -2,6 +2,7 @@
 #define __TP_AUXILIARES_H__
 
 #include "tp_estructura_privada.h"
+#include <stddef.h>
 
 // Calcula el puntaje final aplicando la fórmula indicada en el
 // enunciado
