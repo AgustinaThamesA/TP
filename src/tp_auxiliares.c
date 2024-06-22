@@ -69,9 +69,9 @@ void seleccionar_dificultad(TP *tp)
 
 void mostrar_pokemones_disponibles(TP *tp)
 {
-	printf("\nA continuación, se listarán los nombres de los pokemones dispuestos a ganar la gran carrera de obstáculos...\n");
+	printf("\n\n\nA continuación, se listarán los nombres de los pokemones dispuestos a ganar la gran carrera de obstáculos...\n\n\n");
 	char *nombres = tp_nombres_disponibles(tp);
-	printf("%s\n", nombres);
+	printf("%s\n\n\n", nombres);
 	free(nombres);
 }
 
@@ -98,7 +98,7 @@ char *tp_obtener_nombre_pokemon(TP *tp, unsigned int index)
 void seleccionar_pokemon(TP *tp)
 {
 	char nombre[256];
-	printf("Ingrese el nombre del pokemon que desea seleccionar: ");
+	printf("\n\n\nIngrese el nombre del pokemon que desea seleccionar: ");
 	if (scanf("%255s", nombre) != 1) {
 		fprintf(stderr, "Error al leer la opción\n");
 		return;
@@ -122,10 +122,10 @@ void seleccionar_pokemon(TP *tp)
 		tp_pokemon_seleccionado(tp, JUGADOR_1);
 	const struct pokemon_info *poke_computadora =
 		tp_pokemon_seleccionado(tp, JUGADOR_2);
-	printf("Usted estará compitiendo por el pokemon %s\n",
-	       poke_usuario->nombre);
-	printf("El pokemon al cual te estarás enfrentando será... %s\n",
-	       poke_computadora->nombre);
+	printf("\n\n\nUsted estará compitiendo con el pokemon %s que tiene %d de fuerza, %d de destreza y %d de inteligencia.\n",
+	       poke_usuario->nombre, poke_usuario->fuerza, poke_usuario->destreza, poke_usuario->inteligencia);
+	printf("\nEl pokemon al cual te estarás enfrentando será... %s\n Tu oponente tiene %d de fuerza, %d de destreza y %d de inteligencia.\n\n\n",
+	       poke_computadora->nombre, poke_computadora->fuerza, poke_computadora->destreza, poke_computadora->inteligencia);
 }
 
 void mostrar_menu_principal(int *opcion)
@@ -140,6 +140,7 @@ void mostrar_menu_principal(int *opcion)
 	    scanf("%d", opcion) != 3) {
 		fprintf(stderr, "Error al leer la opción\n");
 	}
+	printf("\n\n\n");
 }
 
 void agregar_obstaculos_a_pista_compu(TP *tp)
@@ -172,7 +173,7 @@ void agregar_obstaculos_a_pista_compu(TP *tp)
 
 void usuario_elije_pista(TP *tp)
 {
-	printf("Elija la longitud de su pista: ");
+	printf("\n\nElija la longitud de su pista: ");
 	int largo_pista_jugador = 0;
 	while (scanf("%d", &largo_pista_jugador) != 1 ||
 	       largo_pista_jugador < 5) {
@@ -222,6 +223,7 @@ void usuario_elije_pista(TP *tp)
 				     (unsigned)posicion);
 		printf("Posición obstáculo: %d\n", posicion);
 	}
+	printf("\n\n\n");
 }
 
 void preparar_carrera(TP *tp)
@@ -305,7 +307,6 @@ void correr_carrera(TP *tp)
 
 	while (distancia_recorrida_jugador1 <= pista_jugador_1->largo_pista &&
 	       distancia_recorrida_jugador2 <= pista_jugador_2->largo_pista) {
-		// Update velocities only when necessary
 		if (turno % 2 == 0) {
 			velocidad_jugador1 = calcular_velocidad(
 				tp, JUGADOR_1,
@@ -319,14 +320,12 @@ void correr_carrera(TP *tp)
 		pista_jugador_1->velocidad = velocidad_jugador1;
 		pista_jugador_2->velocidad = velocidad_jugador2;
 
-		// Increment time and distances
 		tiempo_transcurrido++;
 		distancia_recorrida_jugador1 +=
 			velocidad_jugador1 * tiempo_transcurrido;
 		distancia_recorrida_jugador2 +=
 			velocidad_jugador2 * tiempo_transcurrido;
 
-		// Print progress (consider using a buffer or separate thread for this)
 		printf("Tiempo transcurrido: %f segundos\n",
 		       tiempo_transcurrido);
 		printf("Distancia recorrida por el jugador 1: %f metros\n",
@@ -339,7 +338,6 @@ void correr_carrera(TP *tp)
 		       velocidad_jugador2);
 		printf("\n");
 
-		// Avanzar pokemones
 		if (turno % 2 == 0) {
 			avanzar_pokemon(tp, JUGADOR_1,
 					distancia_recorrida_jugador1);
@@ -353,10 +351,9 @@ void correr_carrera(TP *tp)
 	}
 
 	int puntaje = calculo_puntaje(tp);
-	printf("Puntaje final: %d\n", puntaje);
+	printf("\n\nPuntaje final: %d\n", puntaje);
 
-	// Mostrar el resultado de la carrera
-	printf("¡La carrera ha terminado!\n");
+	printf("\n\n¡La carrera ha terminado!\n");
 	if (distancia_recorrida_jugador1 >= pista_jugador_1->largo_pista) {
 		printf("El jugador 1 ha ganado la carrera!\n");
 	} else if (distancia_recorrida_jugador2 >=
